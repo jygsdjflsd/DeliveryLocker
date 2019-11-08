@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">DeliveryLocker</string>
+    <string name="screen_netloading_top">正在尝试连接网络，请稍等...</string>
+    <string name="screen_netloading_bottom">请确保网络配置正确，如果异常请联系经销商</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

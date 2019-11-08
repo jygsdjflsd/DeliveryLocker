@@ -9,20 +9,32 @@ import androidx.fragment.app.Fragment;
 
 import com.ysxsoft.deliverylocker.R;
 
+
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 public abstract class BaseFragment extends Fragment {
 
     protected View mView;
-
+    Unbinder unbinder;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         if (mView  == null){
             mView = inflater.inflate( getLayoutId(), container, false);
+            unbinder = ButterKnife.bind(this, mView);
         }
+        initView();
         return mView;
     }
 
     protected abstract int getLayoutId();
+    protected abstract void initView();
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
+    }
 }

@@ -81,4 +81,10 @@ dependencies {
      * 阿里热更新框架
      */
     implementation 'com.aliyun.ams:alicloud-android-hotfix:3.2.9'
+
+    /**
+     * 扫描、生成二维码
+     */
+    implementation 'cn.yipianfengye.android:zxing-library:2.2'
+
 }

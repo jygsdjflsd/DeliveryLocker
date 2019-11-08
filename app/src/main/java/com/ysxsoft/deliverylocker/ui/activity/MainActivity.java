@@ -2,6 +2,7 @@ package com.ysxsoft.deliverylocker.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,11 +14,13 @@ import androidx.fragment.app.Fragment;
 
 import com.ysxsoft.deliverylocker.R;
 import com.ysxsoft.deliverylocker.app.MyApplication;
-import com.ysxsoft.deliverylocker.ui.adapter.FgAdapter;
+import com.ysxsoft.deliverylocker.bean.DeviceBean;
 import com.ysxsoft.deliverylocker.ui.adapter.FgvgAdapter;
-import com.ysxsoft.deliverylocker.ui.fragment.TabFragment;
+import com.ysxsoft.deliverylocker.ui.fragment.Tab1Fragment;
+import com.ysxsoft.deliverylocker.ui.fragment.Tab2Fragment;
 import com.ysxsoft.deliverylocker.widget.CustomViewPager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +29,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends BaseActivity {
+
+    public static void newIntent(Serializable serializable) {
+        Intent intent = new Intent(MyApplication.getApplication(), MainActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("bean", serializable);
+        intent.putExtras(bundle);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        MyApplication.getApplication().startActivity(intent);
+    }
 
     @BindView(R.id.parent)
     ConstraintLayout parent;
@@ -48,35 +60,27 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.btn3)
     Button btn3;
 
-    /**
-     * @param json
-     */
-    public static void newIntent(String json) {
-        Intent intent = new Intent(MyApplication.getApplication(), MainActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("json", json);
-        intent.putExtras(bundle);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        MyApplication.getApplication().startActivity(intent);
-    }
-
+    private DeviceBean deviceBean;
 
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main;
     }
 
+
     @Override
     protected void initView() {
+        deviceBean = getIntent().getExtras() != null ? (DeviceBean) getIntent().getExtras().getSerializable("bean") : new DeviceBean();
         initFragment();
     }
 
     private void initFragment() {
         viewPager.setScanScroll(false);//不支持滑动
+        viewPager.setOffscreenPageLimit(3);
         List<Fragment> list = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            list.add(TabFragment.newInstance(i));
-        }
+        list.add(Tab1Fragment.newInstance(0, deviceBean.getResult().getCompany().getRegister_key()));
+        list.add(Tab2Fragment.newInstance(1));
+        list.add(Tab1Fragment.newInstance(2, String.valueOf(deviceBean.getResult().getCompany().getCompany_id())));
         FgvgAdapter fgAdapter = new FgvgAdapter(getSupportFragmentManager(), 0, list);
         viewPager.setAdapter(fgAdapter);
     }
@@ -103,9 +107,23 @@ public class MainActivity extends BaseActivity {
                 break;
         }
     }
-    private void clearBtnBack(){
+
+    private void clearBtnBack() {
+        btn1.setTextColor(ContextCompat.getColor(mContext, R.color.color282828));
+        btn2.setTextColor(ContextCompat.getColor(mContext, R.color.color282828));
+        btn3.setTextColor(ContextCompat.getColor(mContext, R.color.color282828));
         btn1.setBackgroundResource(R.color.colorF5F5F5);
         btn2.setBackgroundResource(R.color.colorF5F5F5);
         btn3.setBackgroundResource(R.color.colorF5F5F5);
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {//有人摁下屏幕，//刷新回位倒计时
+
+        }
+        return super.onTouchEvent(event);
+
     }
 }

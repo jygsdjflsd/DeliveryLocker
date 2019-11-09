@@ -26,6 +26,22 @@ public class ApiUtils {
         option.iPostJsonStringCb = absPostJsonStringCb;
         OkGoUtils.postJsonStringCallback(option);
     }
+    /**
+     * 获取二维码
+     *
+     * @param register_key        key
+     * @param absPostJsonStringCb 回调
+     */
+    public static void getQrCode(String register_key, AbsPostJsonStringCb absPostJsonStringCb) {
+        OkGoUtils.RequestOption option = new OkGoUtils.RequestOption();
+        option.params = new HashMap<>();
+        option.params.put("from", "cabinet");
+        option.params.put("register_key", register_key);
+        option.isNormalDeal = false;
+        option.url = Url.APP_QRCODE;
+        option.iPostJsonStringCb = absPostJsonStringCb;
+        OkGoUtils.postJsonStringCallback(option);
+    }
 
 
 }

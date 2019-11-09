@@ -7,8 +7,10 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.ysxsoft.deliverylocker.R;
 import com.ysxsoft.deliverylocker.api.ApiUtils;
+import com.ysxsoft.deliverylocker.bean.DeviceBean;
 import com.ysxsoft.deliverylocker.network.AbsPostJsonStringCb;
 import com.ysxsoft.deliverylocker.utils.MD5Util;
 import com.ysxsoft.deliverylocker.utils.PingUtil;
@@ -99,7 +101,8 @@ public class ScreenActivity extends BaseActivity {
                         startActivity(new Intent(mContext, MainActivity.class));
                         finish();
                     }else if (status == 2){//设备合法 进入取件界面
-                        MainActivity.newIntent(str);
+                        DeviceBean device = new Gson().fromJson(str, DeviceBean.class);
+                        MainActivity.newIntent(device);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

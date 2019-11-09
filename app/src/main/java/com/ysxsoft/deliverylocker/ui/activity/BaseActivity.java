@@ -3,9 +3,12 @@ package com.ysxsoft.deliverylocker.ui.activity;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,12 +25,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         mContext = this;
         setContentView(getLayoutId());
         ButterKnife.bind(this);
         initView();
-
     }
 
     protected abstract int getLayoutId();
@@ -36,9 +38,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 吐司
+     *
      * @param tost
      */
-    protected void toast(String tost){
+    protected void toast(String tost) {
         ToastUtils.show(tost);
     }
 
@@ -58,6 +61,45 @@ public abstract class BaseActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
+
+    /**
+     * 显示nativebar
+     * @return
+     */
+    public boolean showNavigation() {
+        boolean isshow;
+        try {
+            String command;
+            command = "LD_LIBRARY_PATH=/vendor/lib:/system/lib am startservice -n com.android.systemui/.SystemUIService";
+            Process proc = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
+            proc.waitFor();
+            isshow = true;
+        } catch (Exception e) {
+            isshow = false;
+            e.printStackTrace();
+        }
+        return isshow;
+    }
+    /**
+     * 隐藏nativebar
+     *
+     * @return
+     */
+    public boolean hideNavigation() {
+        boolean ishide;
+        try {
+            String command;
+            command = "LD_LIBRARY_PATH=/vendor/lib:/system/lib service call activity 42 s16 com.android.systemui";
+            Process proc = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
+            proc.waitFor();
+            ishide = true;
+        } catch (Exception ex) {
+            Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
+            ishide = false;
+        }
+        return ishide;
+    }
+
     /**
      * 获取设备imei
      *
@@ -70,7 +112,21 @@ public abstract class BaseActivity extends AppCompatActivity {
         return tm.getDeviceId();
 //        return tm.getImei(1);//6.0以后对双卡双待手机获取imei号的方法，这里无用
     }
+    /**
+     * 隐藏虚拟按键，并且全屏
 
-
+    protected void hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
+            View v = this.getWindow().getDecorView();
+            v.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            //for new api versions.
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }*/
 
 }

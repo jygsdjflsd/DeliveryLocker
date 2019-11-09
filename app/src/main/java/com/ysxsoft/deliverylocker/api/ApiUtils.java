@@ -42,6 +42,24 @@ public class ApiUtils {
         option.iPostJsonStringCb = absPostJsonStringCb;
         OkGoUtils.postJsonStringCallback(option);
     }
+    /**
+     * 取件码开门
+     *
+     * @param register_key        key
+     * @param absPostJsonStringCb 回调
+     */
+    public static void takeCode(String code, String register_key, AbsPostJsonStringCb absPostJsonStringCb) {
+        OkGoUtils.RequestOption option = new OkGoUtils.RequestOption();
+        option.params = new HashMap<>();
+        option.params.put("from", "code-user");
+        option.params.put("type", "get_by_code");
+        option.params.put("code", "code");
+        option.params.put("register_key", register_key);
+        option.isNormalDeal = false;
+        option.url = Url.APP_TAKECODE;
+        option.iPostJsonStringCb = absPostJsonStringCb;
+        OkGoUtils.postJsonStringCallback(option);
+    }
 
 
 }

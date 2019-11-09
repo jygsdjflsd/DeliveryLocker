@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 
+import com.example.x6.serial.SerialPort;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.cache.CacheEntity;
 import com.lzy.okgo.cache.CacheMode;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 import okhttp3.OkHttpClient;
 
 public class MyApplication extends Application {
@@ -38,6 +40,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         application = this;
+        CustomActivityOnCrash.install(this);
         initOkGo();
         setAllActivityListener();
     }

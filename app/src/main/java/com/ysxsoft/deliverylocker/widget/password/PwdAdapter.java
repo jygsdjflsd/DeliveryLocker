@@ -24,10 +24,21 @@ public class PwdAdapter extends RecyclerView.Adapter<PwdAdapter.MyViewHolder> {
         this.context = context;
         this.list = list;
     }
+
+    /**
+     * 重置
+     */
+    void resetData() {
+        for (int i = 0; i < 8; i++) {
+            list.set(i, "");
+        }
+        notifyDataSetChanged();
+    }
     void setData(@IntRange(from = 0) int index, @NonNull String data) {
         list.set(index, data);
         notifyItemChanged(index);
     }
+
 
     @NonNull
     @Override
@@ -39,10 +50,10 @@ public class PwdAdapter extends RecyclerView.Adapter<PwdAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.tvItem.setText(String.valueOf(position));
-        if (!TextUtils.isEmpty(list.get(position))) {
+        if (TextUtils.isEmpty(list.get(position))) {
             holder.tvItem.setText("-");
         } else {
-            holder.tvItem.setText("");
+            holder.tvItem.setText(String.valueOf(list.get(position)));
         }
     }
 

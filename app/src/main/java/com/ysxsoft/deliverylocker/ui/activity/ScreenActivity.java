@@ -11,7 +11,12 @@ import com.google.gson.Gson;
 import com.ysxsoft.deliverylocker.R;
 import com.ysxsoft.deliverylocker.api.ApiUtils;
 import com.ysxsoft.deliverylocker.bean.DeviceBean;
+import com.ysxsoft.deliverylocker.bean.DeviceInfo;
 import com.ysxsoft.deliverylocker.network.AbsPostJsonStringCb;
+import com.ysxsoft.deliverylocker.receiver.ReceiverOrders;
+import com.ysxsoft.deliverylocker.service.DaemonService;
+import com.ysxsoft.deliverylocker.service.TimerSerVice;
+import com.ysxsoft.deliverylocker.tcp.SocketClient;
 import com.ysxsoft.deliverylocker.utils.MD5Util;
 import com.ysxsoft.deliverylocker.utils.PingUtil;
 
@@ -79,7 +84,10 @@ public class ScreenActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        startService(new Intent(mContext, DaemonService.class) );
+        ReceiverOrders.openDog();//打开看门狗
         mHandler.post(runnable);//查询网络
+        hideNavigation();
     }
 
     /**
@@ -102,7 +110,9 @@ public class ScreenActivity extends BaseActivity {
                         finish();
                     }else if (status == 2){//设备合法 进入取件界面
                         DeviceBean device = new Gson().fromJson(str, DeviceBean.class);
-                        MainActivity.newIntent(device);
+                        DeviceInfo.getIntence().setDeviceBean(device);
+                        MainActivity.newIntent();
+                        finish();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

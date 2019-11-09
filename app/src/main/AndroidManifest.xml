@@ -23,6 +23,7 @@
         <activity
             android:name=".ui.activity.ScreenActivity"
             android:icon="@mipmap/icon_logo"
+            android:launchMode="singleTask"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,7 +32,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.MainActivity" />
+        <activity android:name=".ui.activity.MainActivity"
+            />
 
 
         <!--        接收开机广播-->
@@ -45,9 +47,7 @@
         </receiver>
         <!--        网络监听-->
         <receiver
-            android:name=".receiver.NetworkConnectChangedReceiver"
-            android:enabled="true"
-            android:exported="true">
+            android:name=".receiver.NetworkConnectChangedReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" /><!-- androidN或以上版本动态注册 -->
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
@@ -76,6 +76,9 @@
         <meta-data
             android:name="com.taobao.android.hotfix.RSASECRET"
             android:value="28123416" />
+<!--        长链接服务-->
+        <service android:name=".service.TimerSerVice" />
+        <service android:name=".service.DaemonService" />
     </application>
 
 </manifest>

@@ -6,6 +6,8 @@
     android:background="@drawable/store_d1d1d1_dp5"
     android:layout_marginStart="3dp"
     android:layout_marginEnd="3dp"
+    android:gravity="center"
+    android:textSize="25sp"
     >
 
 </TextView>

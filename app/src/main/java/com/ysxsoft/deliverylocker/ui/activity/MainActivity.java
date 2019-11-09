@@ -86,19 +86,19 @@ public class MainActivity extends BaseActivity {
         NetWorkUtil.getPhoneState(this, size -> tvNetWork.setText(String.format("4G/%s", size)));
         initFragment();
         initTouchTimer();
-        TaskCenter.sharedCenter().setConnectedCallback(() -> {
-            Log.e("socketMain", "connected");
-        });
-        TaskCenter.sharedCenter().setDisconnectedCallback(e -> {
-            Log.e("socketMain", e.toString());
-        });
-        TaskCenter.sharedCenter().setReceivedCallback(receicedMessage -> {
-            Log.e("socketMain", receicedMessage);
-        });
+//        TaskCenter.sharedCenter().setConnectedCallback(() -> {
+//            Log.e("socketMain", "connected");
+//        });
+//        TaskCenter.sharedCenter().setDisconnectedCallback(e -> {
+//            Log.e("socketMain", e.toString());
+//        });
+//        TaskCenter.sharedCenter().setReceivedCallback(receicedMessage -> {
+//            Log.e("socketMain", receicedMessage);
+//        });
 
-        TaskCenter.sharedCenter().connect(SocketClient.TCP_HOST, SocketClient.TCP_PORT);
-        TaskCenter.sharedCenter().send(DeviceInfo.getIntence().register_key().getBytes());
-//        SocketClient.socketMain(DeviceInfo.getIntence().register_key());
+//        TaskCenter.sharedCenter().connect(SocketClient.TCP_HOST, SocketClient.TCP_PORT);
+//        TaskCenter.sharedCenter().send(DeviceInfo.getIntence().register_key().getBytes());
+        SocketClient.socketMain(DeviceInfo.getIntence().register_key());
     }
 
     private void initFragment() {

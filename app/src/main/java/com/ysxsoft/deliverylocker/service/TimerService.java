@@ -2,6 +2,7 @@ package com.ysxsoft.deliverylocker.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -9,8 +10,9 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.ysxsoft.deliverylocker.receiver.ReceiverOrders;
+import com.ysxsoft.deliverylocker.tcp.SocketClient;
 
-public class TimerSerVice extends Service {
+public class TimerService extends Service {
 
     private Handler mHandler;
     private Runnable dogRunnable;
@@ -18,23 +20,35 @@ public class TimerSerVice extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        initHandler();
         return null;
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        initHandler();
+
+    }
 
     private void initHandler(){
         mHandler = new Handler();
         dogRunnable = () -> {
             ReceiverOrders.feedDog();//喂养看门狗
             mHandler.postDelayed(dogRunnable, 10*1000);
-            Log.e("TimerSerVice", "喂养看门狗");
         };
         soketRunnable = () -> {
-            mHandler.postDelayed(dogRunnable, 10*1000);
-            Log.e("TimerSerVice", "查看长链接");
+            if (SocketClient.isConnectioned()){
+                SocketClient.sendMsg("cabinet_heartbeat");
+            }
+            mHandler.postDelayed(soketRunnable, 60*1000);
         };
         mHandler.post(dogRunnable);
         mHandler.post(soketRunnable);
+    }
+
+    public class MyBinder extends Binder {
+        public TimerService getService(){
+            return TimerService.this;
+        }
     }
 }

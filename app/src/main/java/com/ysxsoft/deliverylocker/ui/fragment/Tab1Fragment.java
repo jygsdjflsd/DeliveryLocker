@@ -100,6 +100,8 @@ public class Tab1Fragment extends BaseFragment {
                     JSONObject object = new JSONObject(str);
                     if (object.optInt("status") == 0) {
                         GlideUtils.setBackgroud(ivQrCode, object.optString("result"));//加载图片
+                    }else {
+                        getQrCode();//失败重新获取网络加载二维码
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

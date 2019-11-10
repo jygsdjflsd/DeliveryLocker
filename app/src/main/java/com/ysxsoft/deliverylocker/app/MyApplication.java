@@ -43,6 +43,7 @@ public class MyApplication extends Application {
         CustomActivityOnCrash.install(this);
         initOkGo();
         setAllActivityListener();
+
     }
 
     public static MyApplication getApplication(){

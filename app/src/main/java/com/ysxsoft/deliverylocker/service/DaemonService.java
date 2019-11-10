@@ -10,6 +10,9 @@ import android.util.Log;
 
 import java.util.List;
 
+/**
+ * 不知道干嘛用的
+ */
 public class DaemonService extends Service {
 
     private static final String TAG = "DaemonService";

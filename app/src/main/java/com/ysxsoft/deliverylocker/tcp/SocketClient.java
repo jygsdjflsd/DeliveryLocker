@@ -4,6 +4,11 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.ysxsoft.deliverylocker.utils.SerialPortUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -16,6 +21,8 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Dns;
 
@@ -30,7 +37,11 @@ public class SocketClient {
     private static Socket socket;
     private static InetAddress address;
     private static InputStream is;
+    private static OutputStream os;
+    private static PrintWriter pw;
     private static BufferedReader br;
+
+    private static String receiverStr = "";
 
     public static void socketMain(String register_key) {
         Log.e("socketMain", "register_key = " + register_key);
@@ -45,13 +56,11 @@ public class SocketClient {
                     socket.sendUrgentData(0);
 
                     //发送给服务器的信息
-                    OutputStream os = socket.getOutputStream();
-                    PrintWriter pw = new PrintWriter(os);
-                    if (register_key != null && !TextUtils.isEmpty(register_key)) {
-                        pw.write(register_key);
-                    }
-                    Log.e("socketMain", socket.isConnected() + "");
-                    pw.flush();
+                    os = socket.getOutputStream();
+                    pw = new PrintWriter(os);
+                    sendMsg(register_key);
+
+
                     //从服务器获取信息
                     while (socket.isConnected()) {
                         is = socket.getInputStream();
@@ -59,7 +68,11 @@ public class SocketClient {
                         char[] buffer = new char[1024];
                         while (br.read(buffer) > 0) {
                             System.err.println(String.valueOf(buffer));
+                            String orderResult = String.valueOf(buffer);
+                            orderResult = orderResult.substring(0, orderResult.lastIndexOf("}")+1);
                             Log.e("socketMain", "socketMain=====>>>>" + String.valueOf(buffer));
+                            Log.e("socketMain", "orderResult=====>>>>" + orderResult);
+                            SerialPortUtil.parseData(orderResult);
                         }
                     }
                     is.close();
@@ -73,7 +86,25 @@ public class SocketClient {
 
     }
 
+    /**
+     * 向服务器发送信息
+     * @param msg
+     */
+    public static void sendMsg(String msg){
+        if (msg != null && !TextUtils.isEmpty(msg)) {
+            pw.write(msg);
+        }
+        Log.e("socketMain", socket.isConnected() + "");
+        pw.flush();
+    }
 
+    /**
+     * 查看长链接是否链接
+     * @return
+     */
+    public static boolean isConnectioned(){
+        return socket != null && socket.isConnected();
+    }
     /**
      * 断开连接
      */

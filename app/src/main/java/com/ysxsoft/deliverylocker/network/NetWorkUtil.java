@@ -24,18 +24,18 @@ public class NetWorkUtil {
                 } else if (location instanceof CdmaCellLocation) {
                     int ID = ((CdmaCellLocation) location).getBaseStationId();
                 }
-                Log.e("MyPhoneListener", "onCellLocationChanged");
+                Log.i("MyPhoneListener", "onCellLocationChanged");
             }
             //系统自带的服务监听器，实时监听网络状态
             @Override
             public void onServiceStateChanged(ServiceState serviceState) {
                 super.onServiceStateChanged(serviceState);
-                Log.e("MyPhoneListener", "onServiceStateChanged");
+                Log.i("MyPhoneListener", "onServiceStateChanged");
             }
             //这个是我们的主角，就是获取对应网络信号强度
             @Override
             public void onSignalStrengthsChanged(SignalStrength signalStrength) {
-                Log.e("MyPhoneListener", "onSignalStrengthsChanged");
+                Log.i("MyPhoneListener", "onSignalStrengthsChanged");
                 //这个ltedbm 是4G信号的值
                 String signalinfo = signalStrength.toString();
                 String[] parts = signalinfo.split(" ");
@@ -45,7 +45,8 @@ public class NetWorkUtil {
                 int dbm = -113 + 2 * asu;
 
                 if (telephonyManager.getNetworkType() == TelephonyManager.NETWORK_TYPE_LTE) {
-                    Log.i("NetWorkUtil", "网络：LTE 信号强度：" + ltedbm + "======Detail:" + signalinfo);
+                    Log.i("NetWorkUtil", "网络：LTE 信号强度：" + ltedbm + "======Detail:" + signalinfo+ " dbm = "+ dbm);
+
                 } else if (telephonyManager.getNetworkType() == TelephonyManager.NETWORK_TYPE_HSDPA ||
                         telephonyManager.getNetworkType() == TelephonyManager.NETWORK_TYPE_HSPA ||
                         telephonyManager.getNetworkType() == TelephonyManager.NETWORK_TYPE_HSUPA ||

@@ -2,7 +2,10 @@ package com.ysxsoft.deliverylocker.utils.glide;
 
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.net.nsd.NsdManager;
+import android.net.nsd.NsdServiceInfo;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -11,12 +14,19 @@ import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomViewTarget;
+import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.gson.Gson;
 import com.ysxsoft.deliverylocker.R;
 import com.ysxsoft.deliverylocker.app.MyApplication;
+
+import java.net.URL;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
@@ -53,13 +63,26 @@ public class GlideUtils {
     }
 
     public static void setBackgroud(ImageView view, String url, int defaultIcon) {
-        glide.load(url)
+        glide.load(Uri.parse(url))
                 .apply(new RequestOptions()
                         .placeholder(defaultIcon)
                         .error(defaultIcon)
                         .dontAnimate()//支持圆形自定义imageview加载
                         .skipMemoryCache(false)//如果内存不足不缓存
                 )
+                /*.addListener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        Log.e("Glideutis", "onLoadFailed : e = "+ e);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        Log.e("Glideutis", "onResourceReady : resource = "+ new Gson().toJson(resource));
+                        return false;
+                    }
+                })*/
                 .thumbnail(0.5f)//压缩
                 .into(view);
     }

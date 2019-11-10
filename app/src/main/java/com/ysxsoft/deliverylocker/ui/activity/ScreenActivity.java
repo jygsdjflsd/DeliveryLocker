@@ -15,8 +15,6 @@ import com.ysxsoft.deliverylocker.bean.DeviceInfo;
 import com.ysxsoft.deliverylocker.network.AbsPostJsonStringCb;
 import com.ysxsoft.deliverylocker.receiver.ReceiverOrders;
 import com.ysxsoft.deliverylocker.service.DaemonService;
-import com.ysxsoft.deliverylocker.service.TimerSerVice;
-import com.ysxsoft.deliverylocker.tcp.SocketClient;
 import com.ysxsoft.deliverylocker.utils.MD5Util;
 import com.ysxsoft.deliverylocker.utils.PingUtil;
 
@@ -85,9 +83,8 @@ public class ScreenActivity extends BaseActivity {
     @Override
     protected void initView() {
         startService(new Intent(mContext, DaemonService.class) );
-        ReceiverOrders.openDog();//打开看门狗
         mHandler.post(runnable);//查询网络
-        hideNavigation();
+        ReceiverOrders.hideNavigation();//隐藏导航栏
     }
 
     /**

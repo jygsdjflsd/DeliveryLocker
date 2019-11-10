@@ -45,6 +45,12 @@ public class DeviceInfo {
         }
         return deviceBean.getResult().getCompany().getProperty();
     }
+    public String getLogo(){
+        if (deviceBean == null || deviceBean.getResult() == null || deviceBean.getResult().getCompany() == null){
+            return "";
+        }
+        return deviceBean.getResult().getCompany().getLogo();
+    }
     public String getService_tel(){
         if (deviceBean == null || deviceBean.getResult() == null || deviceBean.getResult().getCompany() == null){
             return "";

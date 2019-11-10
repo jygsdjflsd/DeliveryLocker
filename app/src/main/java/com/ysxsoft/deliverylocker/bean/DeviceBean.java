@@ -1,6 +1,7 @@
 package com.ysxsoft.deliverylocker.bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ public class DeviceBean implements Serializable {
     /**
      * status : 2
      * msg :
-     * result : {"company":{"register_key":"register:885a61c30a9cba5a152cabce2777f39","property":"开发android小区","tag":"大门口","service_tel":"18600283835","company_id":172},"ads":[{"url":"http://public.u-xuan.com/%E6%B5%81%E7%A8%8B%E5%9B%BE.png?a=10","type":"image","position":"main-left-10"}]}
+     * result : {"company":{"logo":"https://iot.modoubox.com/cabinet_app/images/logo-white.png","register_key":"register:f89536201f34a9b0ea38b4a1633f73a","property":"美景天成","tag":"大门口","company_id":3,"service_tel":"18600283835"},"ads":[{"url":"http://public.u-xuan.com/%E6%B5%81%E7%A8%8B%E5%9B%BE.png?a=10","type":"image","position":"main-left-10"}]}
      */
 
     private int status;
@@ -27,7 +28,7 @@ public class DeviceBean implements Serializable {
     }
 
     public String getMsg() {
-        return msg;
+        return msg == null ? "" : msg;
     }
 
     public void setMsg(String msg) {
@@ -44,7 +45,7 @@ public class DeviceBean implements Serializable {
 
     public static class ResultBean implements Serializable{
         /**
-         * company : {"register_key":"register:885a61c30a9cba5a152cabce2777f39","property":"开发android小区","tag":"大门口","service_tel":"18600283835","company_id":172}
+         * company : {"logo":"https://iot.modoubox.com/cabinet_app/images/logo-white.png","register_key":"register:f89536201f34a9b0ea38b4a1633f73a","property":"美景天成","tag":"大门口","company_id":3,"service_tel":"18600283835"}
          * ads : [{"url":"http://public.u-xuan.com/%E6%B5%81%E7%A8%8B%E5%9B%BE.png?a=10","type":"image","position":"main-left-10"}]
          */
 
@@ -60,6 +61,9 @@ public class DeviceBean implements Serializable {
         }
 
         public List<AdsBean> getAds() {
+            if (ads == null) {
+                return new ArrayList<>();
+            }
             return ads;
         }
 
@@ -69,21 +73,31 @@ public class DeviceBean implements Serializable {
 
         public static class CompanyBean implements Serializable{
             /**
-             * register_key : register:885a61c30a9cba5a152cabce2777f39
-             * property : 开发android小区
+             * logo : https://iot.modoubox.com/cabinet_app/images/logo-white.png
+             * register_key : register:f89536201f34a9b0ea38b4a1633f73a
+             * property : 美景天成
              * tag : 大门口
+             * company_id : 3
              * service_tel : 18600283835
-             * company_id : 172
              */
 
+            private String logo;
             private String register_key;
             private String property;
             private String tag;
-            private String service_tel;
             private int company_id;
+            private String service_tel;
+
+            public String getLogo() {
+                return logo == null ? "" : logo;
+            }
+
+            public void setLogo(String logo) {
+                this.logo = logo;
+            }
 
             public String getRegister_key() {
-                return register_key;
+                return register_key == null ? "" : register_key;
             }
 
             public void setRegister_key(String register_key) {
@@ -91,7 +105,7 @@ public class DeviceBean implements Serializable {
             }
 
             public String getProperty() {
-                return property;
+                return property == null ? "" : property;
             }
 
             public void setProperty(String property) {
@@ -99,19 +113,11 @@ public class DeviceBean implements Serializable {
             }
 
             public String getTag() {
-                return tag;
+                return tag == null ? "" : tag;
             }
 
             public void setTag(String tag) {
                 this.tag = tag;
-            }
-
-            public String getService_tel() {
-                return service_tel;
-            }
-
-            public void setService_tel(String service_tel) {
-                this.service_tel = service_tel;
             }
 
             public int getCompany_id() {
@@ -120,6 +126,14 @@ public class DeviceBean implements Serializable {
 
             public void setCompany_id(int company_id) {
                 this.company_id = company_id;
+            }
+
+            public String getService_tel() {
+                return service_tel == null ? "" : service_tel;
+            }
+
+            public void setService_tel(String service_tel) {
+                this.service_tel = service_tel;
             }
         }
 
@@ -135,7 +149,7 @@ public class DeviceBean implements Serializable {
             private String position;
 
             public String getUrl() {
-                return url;
+                return url == null ? "" : url;
             }
 
             public void setUrl(String url) {
@@ -143,7 +157,7 @@ public class DeviceBean implements Serializable {
             }
 
             public String getType() {
-                return type;
+                return type == null ? "" : type;
             }
 
             public void setType(String type) {
@@ -151,7 +165,7 @@ public class DeviceBean implements Serializable {
             }
 
             public String getPosition() {
-                return position;
+                return position == null ? "" : position;
             }
 
             public void setPosition(String position) {

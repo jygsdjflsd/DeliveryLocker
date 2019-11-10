@@ -46,7 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 显示状态栏
+     * 显示状态栏（可拉出）
      */
     protected void showStatusBar() {
         // 显示状态栏
@@ -54,50 +54,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 隐藏状态栏
+     * 隐藏状态栏(可拉出)
      */
     protected void hideStatusBar() {
         // 隐藏状态栏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    }
-
-
-    /**
-     * 显示nativebar
-     * @return
-     */
-    public boolean showNavigation() {
-        boolean isshow;
-        try {
-            String command;
-            command = "LD_LIBRARY_PATH=/vendor/lib:/system/lib am startservice -n com.android.systemui/.SystemUIService";
-            Process proc = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
-            proc.waitFor();
-            isshow = true;
-        } catch (Exception e) {
-            isshow = false;
-            e.printStackTrace();
-        }
-        return isshow;
-    }
-    /**
-     * 隐藏nativebar
-     *
-     * @return
-     */
-    public boolean hideNavigation() {
-        boolean ishide;
-        try {
-            String command;
-            command = "LD_LIBRARY_PATH=/vendor/lib:/system/lib service call activity 42 s16 com.android.systemui";
-            Process proc = Runtime.getRuntime().exec(new String[]{"su", "-c", command});
-            proc.waitFor();
-            ishide = true;
-        } catch (Exception ex) {
-            Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
-            ishide = false;
-        }
-        return ishide;
     }
 
     /**

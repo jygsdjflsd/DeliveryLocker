@@ -69,23 +69,21 @@
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ImageView
-        android:id="@+id/ivFlow"
+    <com.youth.banner.Banner
+        android:id="@+id/bannerFlow"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@+id/layoutTop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:src="@mipmap/icon_flowpath"
         android:scaleType="fitXY"
-        app:layout_constraintDimensionRatio="960:1080"
-        />
+        app:layout_constraintDimensionRatio="960:1080"/>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
-        app:layout_constraintStart_toEndOf="@+id/ivFlow"
+        app:layout_constraintStart_toEndOf="@+id/bannerFlow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutTop"
         app:layout_constraintBottom_toBottomOf="parent"

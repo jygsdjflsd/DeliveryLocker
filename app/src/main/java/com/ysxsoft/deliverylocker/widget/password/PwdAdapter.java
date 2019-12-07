@@ -34,6 +34,13 @@ public class PwdAdapter extends RecyclerView.Adapter<PwdAdapter.MyViewHolder> {
         }
         notifyDataSetChanged();
     }
+    void setNewData(StringBuilder buffer){
+        list.clear();
+        for (int i = 0; i < 8; i++) {
+            list.add(i < buffer.length() ? String.valueOf(buffer.charAt(i)) : "");
+        }
+        notifyDataSetChanged();
+    }
     void setData(@IntRange(from = 0) int index, @NonNull String data) {
         list.set(index, data);
         notifyItemChanged(index);

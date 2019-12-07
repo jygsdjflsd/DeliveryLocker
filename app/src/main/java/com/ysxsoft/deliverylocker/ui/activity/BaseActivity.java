@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.ysxsoft.deliverylocker.ActivityManager;
 import com.ysxsoft.deliverylocker.utils.ToastUtils;
 
 import butterknife.ButterKnife;
@@ -27,6 +28,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         mContext = this;
+        ActivityManager.getAppManager().addActivity(this);
         setContentView(getLayoutId());
         ButterKnife.bind(this);
         initView();
@@ -61,18 +63,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
-    /**
-     * 获取设备imei
-     *
-     * @return
-     */
-    @SuppressLint({"MissingPermission", "HardwareIds"})//剔除高版本动态权限警告
-    protected String getImei() {
-        TelephonyManager tm = (TelephonyManager) getSystemService(Service.TELEPHONY_SERVICE);
-//        Log.e("imei", "deviceid:"+ tm.getDeviceId()+"\nmei:"+ tm.getMeid()+ "\nimei1:"+ tm.getImei(0)+ "\nimei1:"+ tm.getImei(1));
-        return tm.getDeviceId();
-//        return tm.getImei(1);//6.0以后对双卡双待手机获取imei号的方法，这里无用
-    }
     /**
      * 隐藏虚拟按键，并且全屏
 

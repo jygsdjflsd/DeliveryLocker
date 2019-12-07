@@ -185,8 +185,9 @@ public abstract class BaseDialog extends DialogFragment {
         return this;
     }
 
-    public void setOnDissmissListener(OnDissmissListener listener){
+    public BaseDialog setOnDissmissListener(OnDissmissListener listener){
         this.listener = listener;
+        return this;
     }
     @Override
     public void onDismiss(DialogInterface dialog) {

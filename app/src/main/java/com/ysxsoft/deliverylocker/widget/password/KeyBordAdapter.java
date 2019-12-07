@@ -42,6 +42,15 @@ public class KeyBordAdapter extends RecyclerView.Adapter<KeyBordAdapter.MyViewHo
         this.clickEnable = clickEnable;
         notifyDataSetChanged();
     }
+
+    /**
+     * 获取
+     * @return
+     */
+    boolean getColorUnify(){
+        return colorUnify;
+    }
+
     /**
      * 设置颜色统一
      *

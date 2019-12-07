@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="400dp"
     android:layout_height="204dp"
-    android:background="@drawable/solid_white_dp5"
+    android:background="@drawable/solid_white_dp10"
     android:layout_gravity="center"
     android:orientation="vertical"
     >
@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="柜门编号："
-            android:textSize="23sp"
+            android:textSize="30sp"
             android:textColor="@color/color282828"
             />
         <TextView
@@ -35,7 +35,7 @@
         android:id="@+id/btnKnow"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/solid_f5f5f5_dp5_bottom"
+        android:background="@drawable/solid_f5f5f5_dp10_bottom"
         android:textSize="23sp"
         android:textColor="@color/color282828"
         android:text="我知道了"

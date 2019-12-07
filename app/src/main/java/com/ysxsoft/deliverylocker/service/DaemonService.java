@@ -11,7 +11,7 @@ import android.util.Log;
 import java.util.List;
 
 /**
- * 不知道干嘛用的
+ * 守护服务
  */
 public class DaemonService extends Service {
 

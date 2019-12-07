@@ -1,25 +1,57 @@
 apply plugin: 'com.android.application'
 
 android {
+//    signingConfigs {
+//        debug {
+//            keyAlias 'xintian'
+//            keyPassword 'xintian888'
+//            storeFile file('C:/Users/Administrator/Desktop/xintian.jks')
+//            storePassword 'xintian888'
+//        }
+//        release {
+//            keyAlias 'xintian'
+//            keyPassword 'xintian888'
+//            storeFile file('C:/Users/Administrator/Desktop/xintian.jks')
+//            storePassword 'xintian888'
+//        }
+//    }
     compileSdkVersion 28
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.ysxsoft.deliverylocker"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 5
+        versionName "1.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
+//        multiDexEnabled true
     }
+
+//    buildTypes {
+//        release {
+//            shrinkResources false
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            applicationVariants.all { variant ->
+//                variant.outputs.all { output ->
+//
+//                    def fileName = "xintianApp_10_v${variant.versionName}.apk"
+//                    if (variant.buildType.isDebuggable()) {
+//                        fileName = "appname_v${variant.versionName}_debug_${variant.flavorName}.apk"
+//                    }
+//                    outputFileName = fileName
+//                }
+//            }
+//        }
+//    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets{
-        main{
+    sourceSets {
+        main {
             jniLibs.srcDirs = ['libs']
         }
     }
@@ -52,7 +84,7 @@ dependencies {
     /**
      * 分包
      */
-    implementation 'androidx.multidex:multidex:2.0.1'
+//    implementation 'androidx.multidex:multidex:2.0.1'
     // okhttp3
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.squareup.okio:okio:1.14.0'
@@ -95,9 +127,9 @@ dependencies {
      * 轮播图
      */
     implementation 'com.youth.banner:banner:1.4.10'
-    /**
-     * 错误日志
-     */
-    implementation 'com.github.LetmeAlittle:errorLibrary:v1.0'
+//    /**
+//     * 错误日志
+//     */
+//    implementation 'com.github.LetmeAlittle:errorLibrary:v1.0'
 
 }

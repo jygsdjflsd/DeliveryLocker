@@ -24,7 +24,7 @@ public class PingUtil {
         Runtime runtime = Runtime.getRuntime();
         Process ipProcess = null;
         try {
-            ipProcess = runtime.exec("ping -c1 www.baidu.com");
+            ipProcess = runtime.exec("ping -c 1 www.baidu.com");
 //            ipProcess = runtime.exec("ping -c1 " + PING_IP + String.format("t={{%s}}", time));
             InputStream input = ipProcess.getInputStream();
 
@@ -51,5 +51,19 @@ public class PingUtil {
             runtime.gc();
         }
         return false;
+    }
+    /**
+     * 判断当前的网络连接状态是否能用
+     * return 0可用   其他值不可用
+     */
+    public static int ping() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process p = runtime.exec("ping -c 1 https://iot.modoubox.com/cabinet/tcp_online_check");
+            return p.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 1;
     }
 }

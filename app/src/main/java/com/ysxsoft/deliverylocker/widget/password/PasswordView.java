@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ysxsoft.deliverylocker.R;
+import com.ysxsoft.deliverylocker.utils.TtsUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +84,21 @@ public class PasswordView extends RelativeLayout {
         keyBordView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         keyBordView.setAdapter(keyBordAdapter);
         keyBordAdapter.setOnitemClickListener(((adapter1, view, position) -> {
+            if (position == 9){
+                if (keyBordAdapter.getColorUnify()){
+                    TtsUtil.getInstance().speak("重置");
+                }
+            }else if (position == 11){
+                if (keyBordAdapter.getColorUnify()){
+                    TtsUtil.getInstance().speak("删除");
+                }
+            }else {
+                if (position == 1){
+                    TtsUtil.getInstance().speak("二");
+                }else {
+                    TtsUtil.getInstance().speak(String.valueOf(keyBordAdapter.getItem(position)));
+                }
+            }
             if (pwdNumb.length() >= 8){
                 return;
             }
@@ -107,21 +123,13 @@ public class PasswordView extends RelativeLayout {
                 return;
             }
             pwdNumb.deleteCharAt(pwdNumb.length() - 1);
-            for (int i = 0; i < 8; i++) {
-                if (pwdNumb.length() > i) {
-                    pwdAdapter.setData(i, String.valueOf(pwdNumb.charAt(i)));
-                } else {
-                    pwdAdapter.setData(i, "");
-                }
-            }
+            pwdAdapter.setNewData(pwdNumb);
         } else {//输入
             if (pwdNumb.length() >= 8) {//显示按钮
                 return;
             }
             pwdNumb.append(item);
-            for (int i = 0; i < pwdNumb.length(); i++) {
-                pwdAdapter.setData(i, String.valueOf(pwdNumb.charAt(i)));
-            }
+            pwdAdapter.setNewData(pwdNumb);
             if (pwdNumb.length() == 8) {//输入完毕
                 //TODO
                 keyBordAdapter.setClickEnable(false);
@@ -130,6 +138,17 @@ public class PasswordView extends RelativeLayout {
                 pwdAdapter.resetData();
             }
         }
+    }
+
+    /**
+     * 清空输入信息
+     */
+    public void clearInput(){
+        pwdNumb = new StringBuilder();
+        if (pwdAdapter != null)
+            pwdAdapter.resetData();
+        if (keyBordAdapter != null )
+            keyBordAdapter.setColorUnify(false);
     }
 
     /**

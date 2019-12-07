@@ -3,7 +3,7 @@
     android:layout_width="400dp"
     android:layout_height="270dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/solid_white_dp5"
+    android:background="@drawable/solid_white_dp10"
     android:layout_gravity="center"
     android:orientation="vertical">
 
@@ -11,50 +11,62 @@
         android:layout_width="match_parent"
         android:layout_height="215dp"
         >
-        <TextView
-            android:id="@+id/tvTop"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="取件码错误或走错柜机"
-            android:textSize="23sp"
-            android:textStyle="bold"
-            android:textColor="@color/color282828"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="50dp"
-            />
-        <TextView
-            android:id="@+id/tv1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1、您可能输错取件码了"
-            android:textSize="13sp"
-            android:textColor="@color/color282828"
-            app:layout_constraintStart_toStartOf="@+id/tvTop"
-            app:layout_constraintEnd_toEndOf="@+id/tvTop"
-            app:layout_constraintTop_toBottomOf="@+id/tvTop"
-            android:layout_marginTop="20dp"
-            />
-        <TextView
-            android:id="@+id/tv2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2、您选择了错误的柜机位置"
-            android:textSize="13sp"
-            android:textColor="@color/color282828"
-            app:layout_constraintStart_toStartOf="@+id/tv1"
-            app:layout_constraintEnd_toEndOf="@+id/tv1"
-            app:layout_constraintTop_toBottomOf="@+id/tv1"
-            android:layout_marginTop="10dp"
-            />
+            app:layout_constraintBottom_toBottomOf="parent"
+            >
+            <TextView
+                android:id="@+id/tvTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="取件码错误或走错柜机"
+                android:textSize="30sp"
+                android:textColor="@color/color282828"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+            <TextView
+                android:id="@+id/tv1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1、您可能输错取件码了"
+                android:textSize="20sp"
+                android:textColor="@color/color282828"
+                app:layout_constraintStart_toStartOf="@+id/tvTop"
+                app:layout_constraintTop_toBottomOf="@+id/tvTop"
+                android:layout_marginTop="20dp"
+                />
+            <TextView
+                android:id="@+id/tv2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2、您选择了错误的柜机位置"
+                android:textSize="20sp"
+                android:textColor="@color/color282828"
+                app:layout_constraintStart_toStartOf="@+id/tv1"
+                app:layout_constraintTop_toBottomOf="@+id/tv1"
+                android:layout_marginTop="10dp"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#EBEBEB"
+        />
     <Button
         android:id="@+id/btnKnow"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/solid_f5f5f5_dp5_bottom"
+        android:background="@drawable/solid_f5f5f5_dp10_bottom"
         android:textSize="23sp"
         android:textColor="@color/color282828"
         android:text="我知道了"

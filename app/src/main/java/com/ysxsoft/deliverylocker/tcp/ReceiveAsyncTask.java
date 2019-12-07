@@ -1,6 +1,7 @@
-package com.ysxsoft.deliverylocker;
+package com.ysxsoft.deliverylocker.tcp;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.ysxsoft.deliverylocker.utils.SerialPortUtil;
 
@@ -8,7 +9,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.concurrent.Executors;
 
 public class ReceiveAsyncTask extends AsyncTask<Void, Integer, Boolean> {
 
@@ -18,14 +23,17 @@ public class ReceiveAsyncTask extends AsyncTask<Void, Integer, Boolean> {
         try {
             if (SerialPortUtil.getSerialtty().getInputStream() != null) {
                 byte[] buffer = new byte[512];
-                int size = SerialPortUtil.getSerialtty().getInputStream().read(buffer);
-                if (size > 0) {
-                    JSONArray retArray = new JSONArray();
-                    for (int i = 0; i < size; i++) {
-                        retArray.put(buffer[i]);
+                int len;
+                while ( (len = SerialPortUtil.getSerialtty().getInputStream().read(buffer, 0, buffer.length)) > 0){
+                    JSONObject object = new JSONObject();
+                    object.putOpt("time", System.currentTimeMillis());
+                    JSONArray array = new JSONArray();
+                    for (int i = 0; i < len; i++) {
+                        array.put(buffer[i]);
                     }
-                    JSONObject ret = new JSONObject();
-                    ret.putOpt("ret_array", retArray);
+                    object.putOpt("order_ary", array);
+                    Log.e("socketMain", "receiver ==>"+ object.toString());
+                    SocketClient.sendMsg(object.toString());
                 }
             } else {
                 return false;

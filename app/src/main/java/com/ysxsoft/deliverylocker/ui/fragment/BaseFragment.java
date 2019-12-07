@@ -32,6 +32,10 @@ public abstract class BaseFragment extends Fragment {
     protected abstract int getLayoutId();
     protected abstract void initView();
 
+    public void externalInvoking(String type){
+
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();

@@ -6,20 +6,20 @@ import android.content.Context;
 import android.os.Bundle;
 
 
-import com.example.x6.serial.SerialPort;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.cache.CacheEntity;
 import com.lzy.okgo.cache.CacheMode;
 import com.lzy.okgo.cookie.CookieJarImpl;
 import com.lzy.okgo.cookie.store.SPCookieStore;
 import com.lzy.okgo.interceptor.HttpLoggingInterceptor;
+import com.ysxsoft.deliverylocker.exceptionhandler.CrashHandler;
+import com.ysxsoft.deliverylocker.utils.cache.ACacheHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 import okhttp3.OkHttpClient;
 
 public class MyApplication extends Application {
@@ -40,10 +40,10 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         application = this;
-        CustomActivityOnCrash.install(this);
+        ACacheHelper.init(this);
         initOkGo();
         setAllActivityListener();
-
+        CrashHandler.getInstance().init(this);
     }
 
     public static MyApplication getApplication(){
@@ -62,11 +62,11 @@ public class MyApplication extends Application {
         builder.addInterceptor(loggingInterceptor);
 
         //全局的读取超时时间  基于前面的通道建立完成后，客户端终于可以向服务端发送数据了
-        builder.readTimeout(OkGo.DEFAULT_MILLISECONDS, TimeUnit.MILLISECONDS);
+        builder.readTimeout(8000, TimeUnit.MILLISECONDS);
         //全局的写入超时时间  服务器发回消息，可是客户端出问题接受不到了
-        builder.writeTimeout(OkGo.DEFAULT_MILLISECONDS, TimeUnit.MILLISECONDS);
+        builder.writeTimeout(8000, TimeUnit.MILLISECONDS);
         //全局的连接超时时间  http建立通道的时间
-        builder.connectTimeout(OkGo.DEFAULT_MILLISECONDS, TimeUnit.MILLISECONDS);
+        builder.connectTimeout(8000, TimeUnit.MILLISECONDS);
 
         //使用sp保持cookie，如果cookie不过期，则一直有效
         builder.cookieJar(new CookieJarImpl(new SPCookieStore(MyApplication.getApplication())));

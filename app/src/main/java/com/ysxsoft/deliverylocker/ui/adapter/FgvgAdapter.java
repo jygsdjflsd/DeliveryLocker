@@ -5,13 +5,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import com.ysxsoft.deliverylocker.ui.fragment.BaseFragment;
+
 import java.util.List;
 
 public class FgvgAdapter extends FragmentPagerAdapter {
 
-    private List<Fragment> mList;
+    private List<BaseFragment> mList;
 
-    public FgvgAdapter(@NonNull FragmentManager fm, int behavior, List<Fragment> mList) {
+    public FgvgAdapter(@NonNull FragmentManager fm, int behavior, List<BaseFragment> mList) {
         super(fm, behavior);
         this.mList = mList;
     }

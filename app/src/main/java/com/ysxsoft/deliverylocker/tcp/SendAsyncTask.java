@@ -1,16 +1,14 @@
-package com.ysxsoft.deliverylocker;
+package com.ysxsoft.deliverylocker.tcp;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.x6.serial.SerialPort;
 import com.ysxsoft.deliverylocker.utils.SerialPortUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 
 public class SendAsyncTask extends AsyncTask<JSONObject, Integer, Boolean> {
@@ -23,15 +21,14 @@ public class SendAsyncTask extends AsyncTask<JSONObject, Integer, Boolean> {
         }
         try {
             JSONArray jsonArray = jsonObjects[0].optJSONArray("data");
-            Log.e("socketMain", "data ==>"+ jsonArray.toString());
             byte[] bData = new byte[jsonArray.length()];
             for (int i = 0; i < jsonArray.length(); i++) {
                 int item = (int) jsonArray.get(i);
                 bData[i] = (byte) item;
             }
             if (SerialPortUtil.getSerialtty() != null){
-                Log.e("socketMain", "bData ==>"+ jsonArray.toString());
                 SerialPortUtil.getSerialtty().getOutputStream().write(bData);
+                Log.e("socketMain", "bData ==>"+ jsonArray.toString());
                 return true;
             }
         } catch (JSONException | IOException e) {
@@ -42,11 +39,10 @@ public class SendAsyncTask extends AsyncTask<JSONObject, Integer, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean outputSuccess) {
-        Log.e("socketMain", "onPostExecute ==>"+ outputSuccess);
-        if (outputSuccess){//写入成功
-
-        }else {//写入失败
-
-        }
+//        if (outputSuccess){//写入成功
+//
+//        }else {//写入失败
+//
+//        }
     }
 }

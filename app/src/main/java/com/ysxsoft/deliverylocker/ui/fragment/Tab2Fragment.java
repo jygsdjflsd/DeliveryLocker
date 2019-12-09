@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.ysxsoft.deliverylocker.bus.OverTimeBus;
 import com.ysxsoft.deliverylocker.network.AbsPostJsonStringCb;
 import com.ysxsoft.deliverylocker.ui.activity.NetWorkLoseActivity;
 import com.ysxsoft.deliverylocker.ui.dialog.BaseDialog;
+import com.ysxsoft.deliverylocker.ui.dialog.OverTimeDialog;
 import com.ysxsoft.deliverylocker.ui.dialog.TakeCodeErrorDialog;
 import com.ysxsoft.deliverylocker.ui.dialog.TakeCodeSuccessDialog;
 import com.ysxsoft.deliverylocker.utils.DensityUtil;
@@ -69,21 +71,6 @@ public class Tab2Fragment extends BaseFragment {
 
     private int position;
     private String register_key;
-
-    @SuppressLint("HandlerLeak")
-    private Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
-                case 101://
-                    overTimeQuery(msg.obj.toString());
-                    break;
-                case 102://支付完成
-                    ToastUtils.show("正在开门请稍后");
-                    break;
-            }
-        }
-    };
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -142,87 +129,22 @@ public class Tab2Fragment extends BaseFragment {
      */
     @Subscribe
     public void overTime(OverTimeBus bus) {
-        overTime(bus.getOrderid());
-    }
+        new Handler(Looper.getMainLooper()).post(()->{
+            OverTimeDialog.newInstance(bus.getOrderid())
+                    .setShowBottom(false)
+                    .setDimAmout(0.5f)//设置背景昏暗度//默认0.5f
+                    .setOutCancel(true)
+                    .setSize(DensityUtil.dp2px(MyApplication.getApplication(), 550), 0)
+                    .show(getChildFragmentManager());
 
-    /**
-     * 取件码超时
-     */
-    private void overTime(String id) {
-        ApiUtils.overTime(DeviceInfo.getIntence().register_key(), id, new AbsPostJsonStringCb() {
-            @Override
-            public void onSuccess(String str, String data) {
-                CodeOvertimerBean bean = new Gson().fromJson(str, CodeOvertimerBean.class);
-                if (bean.getStatus() == 0) {
-                    pwdView.setVisibility(View.GONE);
-                    overTimerLayout.setVisibility(View.VISIBLE);
-                    Bitmap bitmap = QrCodeUtil.getQrCodeWidthPic(bean.getResult().getQrcode(),
-                            DensityUtil.dp2px( MyApplication.getApplication(), 450), DensityUtil.dp2px( MyApplication.getApplication(), 450));
-                    ivQrCode.setImageBitmap(bitmap);
-                    mHandler.sendMessageDelayed(mHandler.obtainMessage(101, id), 5000);
-                }
-            }
-
-            @Override
-            public void onError(Response<String> response) {
-                super.onError(response);
-                //只要失败就进入网络重连页面
-                Intent intent = new Intent(getActivity(), NetWorkLoseActivity.class);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onFinish() {
-
-            }
         });
     }
 
-    /**
-     * 取件码超时
-     */
-    private void overTimeQuery(String id) {
-        ApiUtils.overTimeQuery(id, new AbsPostJsonStringCb() {
-            @Override
-            public void onSuccess(String str, String data) {
-                try {
-                    JSONObject object = new JSONObject(str);
-                    if (object.optInt("status") == 0) {
-                        JSONObject result = object.optJSONObject("result");
-                        if (result.optInt("paid") == 1) {//已经支付
-                            mHandler.sendEmptyMessage(102);
-                        } else {
-                            mHandler.sendMessageDelayed(mHandler.obtainMessage(101, id), 3000);
-                        }
-                    } else {
-                        mHandler.sendMessageDelayed(mHandler.obtainMessage(101, id), 3000);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    mHandler.sendMessageDelayed(mHandler.obtainMessage(101, id), 3000);
-                }
-            }
-
-            @Override
-            public void onError(Response<String> response) {
-                super.onError(response);
-                //只要失败就进入网络重连页面
-                Intent intent = new Intent(getActivity(), NetWorkLoseActivity.class);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onFinish() {
-
-            }
-        });
-    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (EventBus.getDefault().isRegistered(this)) EventBus.getDefault().unregister(this);
-        if (mHandler != null) mHandler.removeMessages(101);
     }
     /**
      * 外部命令

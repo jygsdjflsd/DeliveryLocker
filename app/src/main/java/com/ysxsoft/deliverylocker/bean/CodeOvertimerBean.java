@@ -44,6 +44,7 @@ public class CodeOvertimerBean {
 
         private int captcha_id;
         private String qrcode;
+        private double fee;
 
         public int getCaptcha_id() {
             return captcha_id;
@@ -59,6 +60,14 @@ public class CodeOvertimerBean {
 
         public void setQrcode(String qrcode) {
             this.qrcode = qrcode;
+        }
+
+        public double getFee() {
+            return fee;
+        }
+
+        public void setFee(double fee) {
+            this.fee = fee;
         }
     }
 }

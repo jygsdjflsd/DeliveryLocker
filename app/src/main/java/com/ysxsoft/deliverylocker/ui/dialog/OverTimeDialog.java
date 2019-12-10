@@ -41,11 +41,11 @@ public class OverTimeDialog extends BaseDialog implements BaseDialog.OnDissmissL
     }
 
     @SuppressLint("HandlerLeak")
-    private Handler mHanlder = new Handler(){
+    private Handler mHanlder = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case 101://
                     overTimeQuery();
                     break;
@@ -80,7 +80,7 @@ public class OverTimeDialog extends BaseDialog implements BaseDialog.OnDissmissL
         tvTitle = holder.getView(R.id.tvTitle);
         tvSuccess = holder.getView(R.id.tvSuccess);
         setOnDissmissListener(this);
-        mHanlder.postDelayed(runnable, 30*1000);
+        mHanlder.postDelayed(runnable, 30 * 1000);
         overTime();
     }
 
@@ -88,6 +88,7 @@ public class OverTimeDialog extends BaseDialog implements BaseDialog.OnDissmissL
     public void onDismiss() {
         mHanlder.removeCallbacks(runnable);
         mHanlder.removeMessages(101);
+        mHanlder = null;
     }
 
     /**
@@ -100,10 +101,12 @@ public class OverTimeDialog extends BaseDialog implements BaseDialog.OnDissmissL
                 CodeOvertimerBean bean = new Gson().fromJson(str, CodeOvertimerBean.class);
                 if (bean.getStatus() == 0) {
                     Bitmap bitmap = QrCodeUtil.getQrCodeWidthPic(bean.getResult().getQrcode(),
-                            DensityUtil.dp2px( MyApplication.getApplication(), 450), DensityUtil.dp2px( MyApplication.getApplication(), 450));
+                            DensityUtil.dp2px(MyApplication.getApplication(), 450), DensityUtil.dp2px(MyApplication.getApplication(), 450));
                     ivQrCode.setImageBitmap(bitmap);
-                    mHanlder.sendEmptyMessageDelayed(101, 3000);
-                }else {
+                    tvTitle.setText(String.format("存件超时，需支付超时费用￥%s元", bean.getResult().getFee() / 100));
+                    if (mHanlder != null)
+                        mHanlder.sendEmptyMessageDelayed(101, 3000);
+                } else {
                     Intent intent = new Intent(getActivity(), NetWorkLoseActivity.class);
                     startActivity(intent);
                 }
@@ -136,16 +139,20 @@ public class OverTimeDialog extends BaseDialog implements BaseDialog.OnDissmissL
                     if (object.optInt("status") == 0) {
                         JSONObject result = object.optJSONObject("result");
                         if (result.optInt("paid") == 1) {//已经支付
-                            mHanlder.sendEmptyMessage(102);
+                            if (mHanlder != null)
+                                mHanlder.sendEmptyMessage(102);
                         } else {
-                            mHanlder.sendEmptyMessageDelayed(101, 3000);
+                            if (mHanlder != null)
+                                mHanlder.sendEmptyMessageDelayed(101, 3000);
                         }
                     } else {
-                        mHanlder.sendEmptyMessageDelayed(101, 3000);
+                        if (mHanlder != null)
+                            mHanlder.sendEmptyMessageDelayed(101, 3000);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    mHanlder.sendEmptyMessageDelayed(101, 3000);
+                    if (mHanlder != null)
+                        mHanlder.sendEmptyMessageDelayed(101, 3000);
                 }
             }
 

@@ -35,6 +35,7 @@ public class NetWorkLoseActivity extends BaseActivity {
     @Override
     protected void initView() {
         //只要进入网络检测页面 就关闭长链接 停止外部网络检测服务 开启当前页面网络检测
+        Log.e(TAG, "initview");
         SocketClient.socketClose();
         EventBus.getDefault().post(new NetWorkBus("4G", false));
         mHandler = new Handler();

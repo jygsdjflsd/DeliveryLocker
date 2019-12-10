@@ -103,6 +103,9 @@ public class OverTimeDialog extends BaseDialog implements BaseDialog.OnDissmissL
                             DensityUtil.dp2px( MyApplication.getApplication(), 450), DensityUtil.dp2px( MyApplication.getApplication(), 450));
                     ivQrCode.setImageBitmap(bitmap);
                     mHanlder.sendEmptyMessageDelayed(101, 3000);
+                }else {
+                    Intent intent = new Intent(getActivity(), NetWorkLoseActivity.class);
+                    startActivity(intent);
                 }
             }
 

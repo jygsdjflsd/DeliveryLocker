@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="44dp"
+    android:layout_height="32dp"
+    android:id="@+id/tvItem"
+    android:background="@drawable/store_d1d1d1_dp5"
+    android:layout_marginStart="3dp"
+    android:layout_marginEnd="3dp"
+    android:gravity="center"
+    android:textSize="22sp"
+    >
+
+</TextView>

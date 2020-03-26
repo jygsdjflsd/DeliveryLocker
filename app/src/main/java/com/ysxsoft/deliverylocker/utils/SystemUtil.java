@@ -4,11 +4,15 @@ import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.facebook.stetho.common.LogUtil;
 import com.ysxsoft.deliverylocker.app.MyApplication;
+
+import java.util.List;
 
 public class SystemUtil {
 
@@ -37,6 +41,15 @@ public class SystemUtil {
 //
 //        SubscriptionManager mSubscriptionManager = SubscriptionManager.from(mContext);
 //        int simNumberCard = mSubscriptionManager.getActiveSubscriptionInfoCount()；//获取当前sim卡数量
+        return id;
+    }
+    /**
+     *  sim卡手机号
+     */
+    public static String getTelNumb(){
+        TelephonyManager telephonyManager = (TelephonyManager)MyApplication.getApplication().getSystemService(Context.TELEPHONY_SERVICE);
+        @SuppressLint({"HardwareIds", "MissingPermission"}) String id = telephonyManager.getLine1Number();
+        LogUtil.e("telNumb = "+ id);
         return id;
     }
 

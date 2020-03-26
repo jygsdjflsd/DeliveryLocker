@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IntRange;
@@ -12,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ysxsoft.deliverylocker.R;
+import com.ysxsoft.deliverylocker.app.MyApplication;
+import com.ysxsoft.deliverylocker.utils.DensityUtil;
 
 import java.util.List;
 
@@ -19,6 +22,8 @@ public class PwdAdapter extends RecyclerView.Adapter<PwdAdapter.MyViewHolder> {
 
     private List<String> list;
     private Context context;
+
+    private int sizeType = 10;//屏幕尺寸 默认10
 
     public PwdAdapter(Context context, List<String> list) {
         this.context = context;
@@ -46,11 +51,23 @@ public class PwdAdapter extends RecyclerView.Adapter<PwdAdapter.MyViewHolder> {
         notifyItemChanged(index);
     }
 
+    /**
+     * 设置屏幕尺寸
+     * @param sizeType
+     */
+    public void setSizeType(int sizeType) {
+        this.sizeType = sizeType;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return sizeType;
+    }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View item = LayoutInflater.from(context).inflate(R.layout.item_pwdview, parent, false);
+        View item = LayoutInflater.from(context).inflate( sizeType == 10 ? R.layout.item_pwdview : R.layout.item_pwdview_seven, parent, false);
         return new MyViewHolder(item);
     }
 

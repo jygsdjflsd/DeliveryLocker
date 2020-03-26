@@ -173,4 +173,13 @@ public class PasswordView extends RelativeLayout {
         void inputFinish(String numb);
     }
 
+
+    /**
+     * 设置键盘键位大小 键盘长度
+     */
+    public void setViewSize(int sizeType){
+        keyBordAdapter.setSizeType(sizeType);
+        pwdAdapter.setSizeType(sizeType);
+        requestLayout();
+    }
 }

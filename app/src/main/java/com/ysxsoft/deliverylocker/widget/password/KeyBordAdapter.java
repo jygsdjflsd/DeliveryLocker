@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -11,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ysxsoft.deliverylocker.R;
+import com.ysxsoft.deliverylocker.app.MyApplication;
+import com.ysxsoft.deliverylocker.utils.DensityUtil;
 
 import java.util.List;
 
@@ -23,6 +26,9 @@ public class KeyBordAdapter extends RecyclerView.Adapter<KeyBordAdapter.MyViewHo
 
     private boolean colorUnify;//颜色统一
     private boolean clickEnable;//按键锁定
+
+    private int sizeType = 10;//屏幕尺寸默认10
+
 
     void setOnitemClickListener(OnItemClickListener listener) {
         this.listener = listener;
@@ -68,15 +74,30 @@ public class KeyBordAdapter extends RecyclerView.Adapter<KeyBordAdapter.MyViewHo
             return null;
     }
 
+
+    /**
+     * 设置布局type
+     * @param sizeType
+     */
+    public void setSizeType(int sizeType){
+        this.sizeType = sizeType;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return sizeType;
+    }
+
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View item = LayoutInflater.from(context).inflate(R.layout.item_keybordpwd, parent, false);
+        View item = LayoutInflater.from(context).inflate(viewType == 10 ? R.layout.item_keybordpwd : R.layout.item_keybordpwd_seven, parent, false);
         return new MyViewHolder(item);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+
         holder.itemView.setEnabled(clickEnable);
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onItemClick(this, holder.itemView, position);

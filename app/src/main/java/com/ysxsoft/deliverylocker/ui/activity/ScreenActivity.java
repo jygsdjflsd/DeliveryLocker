@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.facebook.stetho.common.LogUtil;
 import com.google.gson.Gson;
 import com.lzy.okgo.model.Response;
 import com.ysxsoft.deliverylocker.R;
@@ -98,11 +99,11 @@ public class ScreenActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        Log.e("Screen", "init");
         systemSetting();
         startService(new Intent(mContext, DaemonService.class));
         mHandler.post(runnable);//查询网络
-        ReceiverOrders.hideNavigation();//隐藏导航栏
+        ReceiverOrders.showNavigation();//隐藏导航栏
+//        ReceiverOrders.hideNavigation();//隐藏导航栏
     }
 
     /**
@@ -122,8 +123,9 @@ public class ScreenActivity extends BaseActivity {
     private void getService() {
 //        tvTop.setText("请求网络获取设备信息");
         String device_id = MD5Util.md5Decode32(SystemUtil.getImei() + "iot");
-        Log.e("device_id", device_id);
-        ApiUtils.getFacility(device_id, SystemUtil.getSimId(), new AbsPostJsonStringCb() {
+        String telNumb = SystemUtil.getTelNumb();
+        LogUtil.e("device_id = " + device_id + ", telnumb = " + telNumb);
+        ApiUtils.getFacility(device_id, SystemUtil.getTelNumb(), new AbsPostJsonStringCb() {
             @Override
             public void onSuccess(String str, String data) {
                 try {

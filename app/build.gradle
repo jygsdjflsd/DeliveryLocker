@@ -21,8 +21,8 @@ android {
         applicationId "com.ysxsoft.deliverylocker"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 8
-        versionName "1.8"
+        versionCode 10
+        versionName "1.10"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 //        multiDexEnabled true
     }

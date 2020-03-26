@@ -1,6 +1,8 @@
 package com.ysxsoft.deliverylocker.network;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.telephony.CellLocation;
 import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
@@ -14,7 +16,7 @@ public class NetWorkUtil {
 
 
     public static void getPhoneState(Context context, NetWorkListener listener) {
-        final TelephonyManager telephonyManager = (TelephonyManager)     context.getSystemService(Context.TELEPHONY_SERVICE);
+        final TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         PhoneStateListener MyPhoneListener = new PhoneStateListener() {
             @Override
             //获取对应网络的ID，这个方法在这个程序中没什么用处
@@ -26,15 +28,18 @@ public class NetWorkUtil {
                 }
                 Log.i("MyPhoneListener", "onCellLocationChanged");
             }
+
             //系统自带的服务监听器，实时监听网络状态
             @Override
             public void onServiceStateChanged(ServiceState serviceState) {
                 super.onServiceStateChanged(serviceState);
                 Log.i("MyPhoneListener", "onServiceStateChanged");
             }
+
             //这个是我们的主角，就是获取对应网络信号强度
             @Override
             public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+                super.onSignalStrengthsChanged(signalStrength);
                 Log.i("MyPhoneListener", "onSignalStrengthsChanged");
                 //这个ltedbm 是4G信号的值
                 String signalinfo = signalStrength.toString();
@@ -44,45 +49,52 @@ public class NetWorkUtil {
                 int asu = signalStrength.getGsmSignalStrength();
                 int dbm = -113 + 2 * asu;
 
-                if (telephonyManager.getNetworkType() == TelephonyManager.NETWORK_TYPE_LTE) {
-                    Log.i("NetWorkUtil", "网络：LTE 信号强度：" + ltedbm + "======Detail:" + signalinfo+ " dbm = "+ dbm);
 
-                } else if (telephonyManager.getNetworkType() == TelephonyManager.NETWORK_TYPE_HSDPA ||
-                        telephonyManager.getNetworkType() == TelephonyManager.NETWORK_TYPE_HSPA ||
-                        telephonyManager.getNetworkType() == TelephonyManager.NETWORK_TYPE_HSUPA ||
-                        telephonyManager.getNetworkType() == TelephonyManager.NETWORK_TYPE_UMTS)                                               {
-                    String bin;
-                    if (dbm > -75) {
-                        bin = "网络很好";
-                    } else if (dbm > -85) {
-                        bin = "网络不错";
-                    } else if (dbm > -95) {
-                        bin = "网络还行";
-                    } else if (dbm > -100) {
-                        bin = "网络很差";
-                    } else {
-                        bin = "网络错误";
-                    }
-                    Log.i("NetWorkUtil", "网络：WCDMA 信号值：" + dbm + "========强度：" + bin + "======Detail:" + signalinfo);
-                } else {
-                    String bin;
-                    if (asu < 0 || asu >= 99) bin = "网络错误";
-                    else if (asu >= 16) bin = "网络很好";
-                    else if (asu >= 8) bin = "网络不错";
-                    else if (asu >= 4) bin = "网络还行";
-                    else bin = "网络很差";
-                    Log.i("NetWorkUtil", "网络：GSM 信号值：" + dbm + "========强度：" + bin + "======Detail:" + signalinfo);
+                int nType = telephonyManager.getNetworkType();
+                //获取手机所有连接管理对象
+                ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                //获取NetworkInfo对象
+                NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+                //NetworkInfo对象为空 则代表没有网络
+                if (networkInfo == null) {
+                    listener.change(dbm, "无网络");
+                    return;
                 }
-                super.onSignalStrengthsChanged(signalStrength);
-                if (listener != null){
-                    listener.change(dbm);
+                if (nType == ConnectivityManager.TYPE_WIFI) {
+                    //WIFI
+                    listener.change(dbm, "wifi");
+                } else if (nType == ConnectivityManager.TYPE_MOBILE) {
+                    int nSubType = networkInfo.getSubtype();
+                    TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                    //3G   联通的3G为UMTS或HSDPA 电信的3G为EVDO
+                    if (nSubType == TelephonyManager.NETWORK_TYPE_LTE
+                            && !telephonyManager.isNetworkRoaming()) {
+                        listener.change(dbm, "4G");
+                    } else if (nSubType == TelephonyManager.NETWORK_TYPE_UMTS
+                            || nSubType == TelephonyManager.NETWORK_TYPE_HSDPA
+                            || nSubType == TelephonyManager.NETWORK_TYPE_EVDO_0
+                            && !telephonyManager.isNetworkRoaming()) {
+                        listener.change(dbm, "3G");
+                        //2G 移动和联通的2G为GPRS或EGDE，电信的2G为CDMA
+                    } else if (nSubType == TelephonyManager.NETWORK_TYPE_GPRS
+                            || nSubType == TelephonyManager.NETWORK_TYPE_EDGE
+                            || nSubType == TelephonyManager.NETWORK_TYPE_CDMA
+                            && !telephonyManager.isNetworkRoaming()) {
+                        listener.change(dbm, "2G");
+                    } else {
+                        listener.change(dbm, "有线网络");
+                    }
+                }else if (nType == 13){
+                    listener.change(dbm, "p2p_wifi");
+                }else {
+                    listener.change(dbm, "无网络");
                 }
             }
         };
         telephonyManager.listen(MyPhoneListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
     }
 
-    public interface NetWorkListener{
-        void change(int size);
+    public interface NetWorkListener {
+        void change(int size, String type);
     }
 }

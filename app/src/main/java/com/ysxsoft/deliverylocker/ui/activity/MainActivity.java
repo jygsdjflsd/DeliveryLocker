@@ -20,11 +20,13 @@ import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
+import com.facebook.stetho.common.LogUtil;
 import com.lzy.okgo.model.Response;
 import com.taobao.sophix.SophixManager;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
+import com.youth.banner.listener.OnBannerListener;
 import com.ysxsoft.deliverylocker.R;
 import com.ysxsoft.deliverylocker.api.ApiUtils;
 import com.ysxsoft.deliverylocker.app.MyApplication;
@@ -44,6 +46,7 @@ import com.ysxsoft.deliverylocker.ui.fragment.Tab2Fragment;
 import com.ysxsoft.deliverylocker.utils.GlideImageLoader;
 import com.ysxsoft.deliverylocker.utils.MD5Util;
 import com.ysxsoft.deliverylocker.utils.OnPageChangeCallBack;
+import com.ysxsoft.deliverylocker.utils.ScreenUtils;
 import com.ysxsoft.deliverylocker.utils.SerialPortUtil;
 import com.ysxsoft.deliverylocker.utils.SystemUtil;
 import com.ysxsoft.deliverylocker.utils.TtsUtil;
@@ -84,6 +87,8 @@ public class MainActivity extends BaseActivity {
     ConstraintLayout layoutTop;
     @BindView(R.id.bannerFlow)
     Banner bannerFlow;
+    @BindView(R.id.bannerFill)
+    Banner bannerFill;
     @BindView(R.id.btn1)
     Button btn1;
     @BindView(R.id.btn2)
@@ -92,6 +97,7 @@ public class MainActivity extends BaseActivity {
     Button btn3;
 
     private int touchTimer;//页面切换计数
+    private int fillTimer;//全屏轮播计数器
     private Handler mHandler;//handler计数器
     private Runnable runnable;
 
@@ -125,7 +131,7 @@ public class MainActivity extends BaseActivity {
         EventBus.getDefault().register(this);
 
         TtsUtil.getInstance().speak("欢迎使用心甜智能柜");
-        NetWorkUtil.getPhoneState(this, size -> tvNetWork.setText(String.format("4G/%s", size)));
+        NetWorkUtil.getPhoneState(this, (size, type) -> tvNetWork.setText(String.format("%s/%s", type, size)));
 
         tvTop.setText(String.format("%s%s\u3000客服电话：%s", DeviceInfo.getIntence().getProperty(), DeviceInfo.getIntence().getTag(), DeviceInfo.getIntence().getService_tel()));
         GlideUtils.setBackgroud(ivLogo, DeviceInfo.getIntence().getLogo());
@@ -177,6 +183,7 @@ public class MainActivity extends BaseActivity {
                 //TODO  计数器
                 Log.e("runnable", "开始:" + touchTimer);
                 touchTimer++;
+                fillTimer++;
                 if (touchTimer == 20) {//
                     viewPager.setCurrentItem(0);
                     clearBtnBack();
@@ -186,7 +193,10 @@ public class MainActivity extends BaseActivity {
                     Log.e("runnable", "结束");
                     return;
                 }
-                mHandler.postDelayed(this, 1000);
+                if (fillTimer == 60) {
+                    bannerFill.setVisibility(View.VISIBLE);
+                    bannerFill.startAutoPlay();
+                }
             }
         };
     }
@@ -207,6 +217,9 @@ public class MainActivity extends BaseActivity {
                 btn2.setBackgroundResource(R.color.colorMaster);
                 viewPager.setCurrentItem(1);
                 touchTimer = 0;
+                fillTimer = 0;
+                bannerFill.setVisibility(View.GONE);
+                bannerFill.stopAutoPlay();
                 mHandler.removeCallbacks(runnable);
                 mHandler.postDelayed(runnable, 1000);
                 break;
@@ -216,6 +229,9 @@ public class MainActivity extends BaseActivity {
                 btn3.setBackgroundResource(R.color.colorMaster);
                 viewPager.setCurrentItem(2);
                 touchTimer = 0;
+                fillTimer = 0;
+                bannerFill.setVisibility(View.GONE);
+                bannerFill.stopAutoPlay();
                 mHandler.removeCallbacks(runnable);
                 mHandler.postDelayed(runnable, 1000);
                 break;
@@ -235,12 +251,23 @@ public class MainActivity extends BaseActivity {
     }
 
 
-
     @Override
     public void onStart() {
         super.onStart();
         //开始轮播
         bannerFlow.startAutoPlay();
+        if (bannerFill.getVisibility() == View.VISIBLE) {
+            bannerFill.startAutoPlay();
+        } else {
+            bannerFill.stopAutoPlay();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fillTimer = 0;
+        mHandler.post(runnable);
     }
 
     @Override
@@ -248,7 +275,10 @@ public class MainActivity extends BaseActivity {
         super.onStop();
         //结束轮播
         bannerFlow.stopAutoPlay();
+        bannerFill.stopAutoPlay();
+        mHandler.removeCallbacks(runnable);
     }
+
     /**
      * 刷新轮播图（）
      *
@@ -257,17 +287,40 @@ public class MainActivity extends BaseActivity {
     @Subscribe
     public void refreshDevice(DeviceRefreshBus bus) {
         bannerList = DeviceInfo.getIntence().getDeviceBean().getResult().getAds();
+        List<String> listFill = new ArrayList<>();
         List<String> list = new ArrayList<>();
         for (DeviceBean.ResultBean.AdsBean bannerBean : bannerList) {
             list.add(bannerBean.getUrl());
+            switch (bannerBean.getPosition()){
+                case "main-left-10":
+                    list.add(bannerBean.getUrl());
+                    break;
+                case "full-screen-10":
+                    listFill.add(bannerBean.getUrl());
+                    break;
+            }
         }
-        bannerFlow.update(list);
+        runOnUiThread(() -> {
+            bannerFlow.update(list);
+            bannerFill.update(listFill);
+            if (bannerFill.getVisibility() == View.GONE){
+                bannerFill.stopAutoPlay();
+            }
+        });
     }
 
     private void initBanner(List<DeviceBean.ResultBean.AdsBean> adsBean) {
         List<String> list = new ArrayList<>();
+        List<String> listFill = new ArrayList<>();
         for (DeviceBean.ResultBean.AdsBean bannerBean : adsBean) {
-            list.add(bannerBean.getUrl());
+            switch (bannerBean.getPosition()){
+                case "main-left-10":
+                    list.add(bannerBean.getUrl());
+                    break;
+                case "full-screen-10":
+                    listFill.add(bannerBean.getUrl());
+                    break;
+            }
         }
         //设置banner样式(这里有5个样式，有三个必须设置title)
         bannerFlow.setBannerStyle(BannerConfig.CIRCLE_INDICATOR);
@@ -282,22 +335,46 @@ public class MainActivity extends BaseActivity {
         //设置自动轮播，默认为true
         bannerFlow.isAutoPlay(true);
         //设置轮播时间
-        bannerFlow.setDelayTime(5000);
+        bannerFlow.setDelayTime(20 * 1000);
         //设置指示器位置（当banner模式中有指示器时）
         bannerFlow.setIndicatorGravity(BannerConfig.CENTER);
         //banner设置方法全部调用完毕时最后调用
         bannerFlow.start();
+
+        //设置banner样式(这里有5个样式，有三个必须设置title)
+        bannerFill.setBannerStyle(BannerConfig.CIRCLE_INDICATOR);
+        //设置图片加载器
+        bannerFill.setImageLoader(new GlideImageLoader());
+        //设置图片集合
+        bannerFill.setImages(listFill);
+        //设置banner动画效果 FlipHorizontal(翻页)　CubeOut（立方体）CubeIn（还行与Accordion效果类似）
+        bannerFill.setBannerAnimation(Transformer.Accordion);
+//        //设置标题集合（当banner样式有显示title时）
+//        banner.setBannerTitles(titles);
+        //设置自动轮播，默认为true
+        bannerFill.isAutoPlay(true);
+        //设置轮播时间
+        bannerFill.setDelayTime(20 * 1000);
+        //设置指示器位置（当banner模式中有指示器时）
+        bannerFill.setIndicatorGravity(BannerConfig.CENTER);
+        //banner设置方法全部调用完毕时最后调用
+        bannerFill.start();
+        bannerFill.setOnBannerListener(position -> {
+            fillTimer = 0;
+            bannerFill.stopAutoPlay();
+            bannerFill.setVisibility(View.GONE);
+        });
     }
 
 
     /**
      * 上传错误日志
      */
-    private void upDateErrorLog(){
+    private void upDateErrorLog() {
         String error_log = ACacheHelper.getString(CrashHandler.ERROR_LOG, "");
 
-        Log.e("error_log", "log: "+ error_log);
-        if (TextUtils.isEmpty(error_log)){
+        Log.e("error_log", "log: " + error_log);
+        if (TextUtils.isEmpty(error_log)) {
             return;
         }
         String device_id = MD5Util.md5Decode32(SystemUtil.getImei() + "iot");
@@ -326,6 +403,9 @@ public class MainActivity extends BaseActivity {
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             touchTimer = 0;
+            fillTimer = 0;
+            bannerFill.setVisibility(View.GONE);
+            bannerFill.stopAutoPlay();
         }
         return super.dispatchTouchEvent(ev);
     }

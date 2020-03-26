@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.gson.Gson;
@@ -33,6 +34,7 @@ import com.ysxsoft.deliverylocker.ui.dialog.TakeCodeErrorDialog;
 import com.ysxsoft.deliverylocker.ui.dialog.TakeCodeSuccessDialog;
 import com.ysxsoft.deliverylocker.utils.DensityUtil;
 import com.ysxsoft.deliverylocker.utils.QrCodeUtil;
+import com.ysxsoft.deliverylocker.utils.ScreenUtils;
 import com.ysxsoft.deliverylocker.utils.ToastUtils;
 import com.ysxsoft.deliverylocker.widget.password.PasswordView;
 
@@ -87,6 +89,9 @@ public class Tab2Fragment extends BaseFragment {
 
     @Override
     protected void initView() {
+        if (ScreenUtils.getScreenInch((AppCompatActivity) getActivity()) < 9) {//7寸屏幕
+            pwdView.setViewSize(7);
+        }
         pwdView.setListener(numb -> {
             ApiUtils.takeCode(numb, register_key, new AbsPostJsonStringCb() {
                 @Override

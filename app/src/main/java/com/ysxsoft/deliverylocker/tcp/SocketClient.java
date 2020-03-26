@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.JsonIOException;
+import com.ysxsoft.deliverylocker.bean.DeviceInfo;
 import com.ysxsoft.deliverylocker.bus.OverTimeBus;
 import com.ysxsoft.deliverylocker.bus.TcpServerBus;
 import com.ysxsoft.deliverylocker.utils.SerialPortUtil;
@@ -39,7 +40,8 @@ import okhttp3.Dns;
  */
 public class SocketClient {
 
-    public static final String TCP_HOST = "iot.tcp.modoubox.com";
+//    public static final String TCP_HOST = "iot.tcp.modoubox.com";
+    public static final String TCP_HOST = "iot.dev.modoubox.com";//测试
     public static final int TCP_PORT = 8091;
     private static Socket socket;
     private static InetAddress address;
@@ -52,55 +54,52 @@ public class SocketClient {
 
     public static void socketMain(String register_key) {
         Log.e("socketMain", "register_key = " + register_key);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        new Thread(() -> {
+            try {
+                address = InetAddress.getByName(TCP_HOST);
+                //和服务器创建连接
+                socket = new Socket();
+                socket.setKeepAlive(true);
+                socket.connect(new InetSocketAddress(address.getHostAddress().toString(), TCP_PORT));
                 try {
-                    address = InetAddress.getByName(TCP_HOST);
-                    //和服务器创建连接
-                    socket = new Socket();
-                    socket.setKeepAlive(true);
+                    socket.sendUrgentData(0);
+                } catch (Exception e) {
                     socket.connect(new InetSocketAddress(address.getHostAddress().toString(), TCP_PORT));
-                    try {
-                        socket.sendUrgentData(0);
-                    } catch (Exception e) {
-                        socket.connect(new InetSocketAddress(address.getHostAddress().toString(), TCP_PORT));
-                    }
-                    //发送给服务器的信息
-                    os = socket.getOutputStream();
-                    pw = new PrintWriter(os);
-                    sendMsg(register_key);
-
-
-                    //从服务器获取信息
-                    while (socket.isConnected()) {
-                        is = socket.getInputStream();
-                        br = new BufferedReader(new InputStreamReader(is));
-                        char[] buffer = new char[1024];
-                        int len;
-                        while ((len = br.read(buffer, 0, buffer.length)) > 0) {
-                            String text = "";
-                            for (int i = 0; i < len; i++) {
-                                text = String.format("%s%s", text, buffer[i]);
-                            }
-                            JSONObject object = new JSONObject(text);
-                            if (object.optString("type").equals("stc:heartbeat")){//服务器发来的心跳
-                                EventBus.getDefault().post(new TcpServerBus(object.optLong("time")));
-                            }else if (object.optString("type").equals("stc:overtime_pay")){//取件码超时
-                                EventBus.getDefault().post(new OverTimeBus(object.optString("captcha_id")));
-                            }else {
-                                SerialPortUtil.addOrderList(text);
-                            }
-                            Log.e("socketMain", "orderResult=====>>>>" + text);
-                        }
-                    }
-                    Log.e("socket", "close");
-                    is.close();
-                    os.close();
-                    pw.close();
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
                 }
+                //发送给服务器的信息
+                os = socket.getOutputStream();
+                pw = new PrintWriter(os);
+                sendMsg(register_key);
+
+
+                //从服务器获取信息
+                while (socket.isConnected()) {
+                    is = socket.getInputStream();
+                    br = new BufferedReader(new InputStreamReader(is));
+                    char[] buffer = new char[1024];
+                    int len;
+                    while ((len = br.read(buffer, 0, buffer.length)) > 0) {
+                        String text = "";
+                        for (int i = 0; i < len; i++) {
+                            text = String.format("%s%s", text, buffer[i]);
+                        }
+                        JSONObject object = new JSONObject(text);
+                        if (object.optString("type").equals("stc:heartbeat")) {//服务器发来的心跳
+                            EventBus.getDefault().post(new TcpServerBus(object.optLong("time")));
+                        } else if (object.optString("type").equals("stc:overtime_pay")) {//取件码超时
+                            EventBus.getDefault().post(new OverTimeBus(object.optString("captcha_id")));
+                        } else {
+                            SerialPortUtil.addOrderList(text);
+                        }
+                        Log.e("socketMain", "orderResult=====>>>>" + text);
+                    }
+                }
+                Log.e("socket", "close");
+                is.close();
+                os.close();
+                pw.close();
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
             }
         }).start();
 
@@ -113,9 +112,14 @@ public class SocketClient {
      */
     public static void sendMsg(String msg) {
         if (msg != null && !TextUtils.isEmpty(msg)) {
-            pw.write(msg);
+            if (pw != null) {
+                pw.write(msg);
+                pw.flush();
+            } else {
+                socketClose();
+                socketMain(DeviceInfo.getIntence().register_key());
+            }
         }
-        pw.flush();
     }
 
     /**
@@ -125,7 +129,8 @@ public class SocketClient {
      */
     public static boolean isConnectioned() {
         try {
-            socket.sendUrgentData(0);
+            if (socket != null)
+                socket.sendUrgentData(0);
         } catch (IOException e) {
             e.printStackTrace();
             return false;

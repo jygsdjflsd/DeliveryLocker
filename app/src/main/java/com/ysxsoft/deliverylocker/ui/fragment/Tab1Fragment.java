@@ -14,8 +14,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.facebook.stetho.common.LogUtil;
 import com.lzy.okgo.model.Response;
 import com.ysxsoft.deliverylocker.R;
 import com.ysxsoft.deliverylocker.api.ApiUtils;
@@ -23,7 +25,9 @@ import com.ysxsoft.deliverylocker.app.MyApplication;
 import com.ysxsoft.deliverylocker.bus.RefreshQrCodeBus;
 import com.ysxsoft.deliverylocker.network.AbsPostJsonStringCb;
 import com.ysxsoft.deliverylocker.ui.activity.NetWorkLoseActivity;
+import com.ysxsoft.deliverylocker.utils.DensityUtil;
 import com.ysxsoft.deliverylocker.utils.QrCodeUtil;
+import com.ysxsoft.deliverylocker.utils.ScreenUtils;
 import com.ysxsoft.deliverylocker.utils.ToastUtils;
 import com.ysxsoft.deliverylocker.utils.glide.GlideUtils;
 
@@ -63,6 +67,8 @@ public class Tab1Fragment extends BaseFragment {
     @BindView(R.id.layout)
     ConstraintLayout layout;
 
+    private final int SIZE_SEVEN = DensityUtil.dp2px(MyApplication.getApplication(), 300);
+    private final int SIZE_SEVEN_ = DensityUtil.dp2px(MyApplication.getApplication(), 350);
 
     private String register_key;//请求参数
     private int position;// 0二维码取件页面 2投递员投件
@@ -83,6 +89,14 @@ public class Tab1Fragment extends BaseFragment {
     @Override
     protected void initView() {
         EventBus.getDefault().register(this);
+        if (ScreenUtils.getScreenInch((AppCompatActivity) getActivity()) < 9) {//7寸屏幕
+            ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(position == 0 ? SIZE_SEVEN_ : SIZE_SEVEN, position == 0 ? SIZE_SEVEN_ : SIZE_SEVEN);
+            params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
+            params.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+            params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+            ivQrCode.setLayoutParams(params);
+        }
         if (position == 0) {
             tv2.setVisibility(View.GONE);
             tv1.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -94,7 +108,8 @@ public class Tab1Fragment extends BaseFragment {
             });
         } else {
             hideLoadling();
-            ivQrCode.post(()->{
+            ivQrCode.post(() -> {
+                LogUtil.e("position != 0, width = " + ivQrCode.getWidth()+ ", size = "+ SIZE_SEVEN);
                 Bitmap bitmap = QrCodeUtil.getQrCodeWidthPic(String.format("https://iot.modoubox.com/web_wechat/download_app?cid=%s", register_key),
                         ivQrCode.getWidth(), ivQrCode.getHeight());
                 ivQrCode.setImageBitmap(bitmap);
@@ -118,7 +133,7 @@ public class Tab1Fragment extends BaseFragment {
                     JSONObject object = new JSONObject(str);
                     if (object.optInt("status") == 0) {
                         GlideUtils.setBackgroud(ivQrCode, object.optString("result"));//加载图片
-                    }else {
+                    } else {
                         getQrCode(null);//失败重新获取网络加载二维码
                     }
                 } catch (JSONException e) {

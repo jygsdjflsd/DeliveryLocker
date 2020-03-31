@@ -63,31 +63,22 @@ public class NetWorkUtil {
                 if (nType == ConnectivityManager.TYPE_WIFI) {
                     //WIFI
                     listener.change(dbm, "wifi");
-                } else if (nType == ConnectivityManager.TYPE_MOBILE) {
-                    int nSubType = networkInfo.getSubtype();
-                    TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-                    //3G   联通的3G为UMTS或HSDPA 电信的3G为EVDO
-                    if (nSubType == TelephonyManager.NETWORK_TYPE_LTE
-                            && !telephonyManager.isNetworkRoaming()) {
-                        listener.change(dbm, "4G");
-                    } else if (nSubType == TelephonyManager.NETWORK_TYPE_UMTS
-                            || nSubType == TelephonyManager.NETWORK_TYPE_HSDPA
-                            || nSubType == TelephonyManager.NETWORK_TYPE_EVDO_0
-                            && !telephonyManager.isNetworkRoaming()) {
-                        listener.change(dbm, "3G");
-                        //2G 移动和联通的2G为GPRS或EGDE，电信的2G为CDMA
-                    } else if (nSubType == TelephonyManager.NETWORK_TYPE_GPRS
-                            || nSubType == TelephonyManager.NETWORK_TYPE_EDGE
-                            || nSubType == TelephonyManager.NETWORK_TYPE_CDMA
-                            && !telephonyManager.isNetworkRoaming()) {
-                        listener.change(dbm, "2G");
-                    } else {
-                        listener.change(dbm, "有线网络");
-                    }
-                }else if (nType == 13){
-                    listener.change(dbm, "p2p_wifi");
-                }else {
-                    listener.change(dbm, "无网络");
+                } else if (nType == TelephonyManager.NETWORK_TYPE_LTE
+                        && !telephonyManager.isNetworkRoaming()) {
+                    listener.change(dbm, "4G");
+                } else if (nType == TelephonyManager.NETWORK_TYPE_UMTS
+                        || nType == TelephonyManager.NETWORK_TYPE_HSDPA
+                        || nType == TelephonyManager.NETWORK_TYPE_EVDO_0
+                        && !telephonyManager.isNetworkRoaming()) {
+                    listener.change(dbm, "3G");
+                    //2G 移动和联通的2G为GPRS或EGDE，电信的2G为CDMA
+                } else if (nType == TelephonyManager.NETWORK_TYPE_GPRS
+                        || nType == TelephonyManager.NETWORK_TYPE_EDGE
+                        || nType == TelephonyManager.NETWORK_TYPE_CDMA
+                        && !telephonyManager.isNetworkRoaming()) {
+                    listener.change(dbm, "2G");
+                }else if (nType == 0){
+                    listener.change(dbm, "有线网络");
                 }
             }
         };

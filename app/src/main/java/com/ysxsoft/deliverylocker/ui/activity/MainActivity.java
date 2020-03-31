@@ -133,6 +133,7 @@ public class MainActivity extends BaseActivity {
         TtsUtil.getInstance().speak("欢迎使用心甜智能柜");
         NetWorkUtil.getPhoneState(this, (size, type) -> tvNetWork.setText(String.format("%s/%s", type, size)));
 
+//        tvTop.setText(String.format("看这里：deviceid = %s", MD5Util.md5Decode32(SystemUtil.getImei() + "iot")));
         tvTop.setText(String.format("%s%s\u3000客服电话：%s", DeviceInfo.getIntence().getProperty(), DeviceInfo.getIntence().getTag(), DeviceInfo.getIntence().getService_tel()));
         GlideUtils.setBackgroud(ivLogo, DeviceInfo.getIntence().getLogo());
 
@@ -177,28 +178,26 @@ public class MainActivity extends BaseActivity {
      */
     private void initTouchTimer() {
         mHandler = new Handler();
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                //TODO  计数器
-                Log.e("runnable", "开始:" + touchTimer);
-                touchTimer++;
-                fillTimer++;
-                if (touchTimer == 20) {//
-                    viewPager.setCurrentItem(0);
-                    clearBtnBack();
-                    btn1.setTextColor(ContextCompat.getColor(mContext, R.color.colorWhite));
-                    btn1.setBackgroundResource(R.color.colorMaster);
-                    mHandler.removeCallbacks(runnable);
-                    Log.e("runnable", "结束");
-                    return;
-                }
-                if (fillTimer == 60) {
-                    bannerFill.setVisibility(View.VISIBLE);
-                    bannerFill.startAutoPlay();
-                }
+        runnable = () -> {
+            //TODO  计数器
+            Log.e("runnable", "开始:" + touchTimer);
+            touchTimer++;
+            fillTimer++;
+            if (touchTimer == 20) {//
+                viewPager.setCurrentItem(0);
+                clearBtnBack();
+                btn1.setTextColor(ContextCompat.getColor(mContext, R.color.colorWhite));
+                btn1.setBackgroundResource(R.color.colorMaster);
             }
+            if (fillTimer == 60) {
+                bannerFill.setVisibility(View.VISIBLE);
+                bannerFill.startAutoPlay();
+                //左侧轮播停止
+                bannerFlow.stopAutoPlay();
+            }
+            mHandler.postDelayed(runnable, 1000);
         };
+        mHandler.post(runnable);
     }
 
     @OnClick({R.id.btn1, R.id.btn2, R.id.btn3, R.id.tvNetWork})
@@ -216,24 +215,24 @@ public class MainActivity extends BaseActivity {
                 btn2.setTextColor(ContextCompat.getColor(mContext, R.color.colorWhite));
                 btn2.setBackgroundResource(R.color.colorMaster);
                 viewPager.setCurrentItem(1);
-                touchTimer = 0;
-                fillTimer = 0;
-                bannerFill.setVisibility(View.GONE);
-                bannerFill.stopAutoPlay();
-                mHandler.removeCallbacks(runnable);
-                mHandler.postDelayed(runnable, 1000);
+//                touchTimer = 0;
+//                fillTimer = 0;
+//                bannerFill.setVisibility(View.GONE);
+//                bannerFill.stopAutoPlay();
+//                mHandler.removeCallbacks(runnable);
+//                mHandler.postDelayed(runnable, 1000);
                 break;
             case R.id.btn3://投递员投件
                 clearBtnBack();
                 btn3.setTextColor(ContextCompat.getColor(mContext, R.color.colorWhite));
                 btn3.setBackgroundResource(R.color.colorMaster);
                 viewPager.setCurrentItem(2);
-                touchTimer = 0;
-                fillTimer = 0;
-                bannerFill.setVisibility(View.GONE);
-                bannerFill.stopAutoPlay();
-                mHandler.removeCallbacks(runnable);
-                mHandler.postDelayed(runnable, 1000);
+//                touchTimer = 0;
+//                fillTimer = 0;
+//                bannerFill.setVisibility(View.GONE);
+//                bannerFill.stopAutoPlay();
+//                mHandler.removeCallbacks(runnable);
+//                mHandler.postDelayed(runnable, 1000);
                 break;
             case R.id.tvNetWork:
                 toast(String.format("当前版本%s", SystemUtil.getVerName(mContext)));
@@ -252,9 +251,11 @@ public class MainActivity extends BaseActivity {
 
 
     @Override
-    public void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         //开始轮播
+        Log.e("MainActivity", "onstart");
+        fillTimer = 0;
         bannerFlow.startAutoPlay();
         if (bannerFill.getVisibility() == View.VISIBLE) {
             bannerFill.startAutoPlay();
@@ -264,19 +265,11 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        fillTimer = 0;
-        mHandler.post(runnable);
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
         //结束轮播
         bannerFlow.stopAutoPlay();
         bannerFill.stopAutoPlay();
-        mHandler.removeCallbacks(runnable);
     }
 
     /**
@@ -290,7 +283,6 @@ public class MainActivity extends BaseActivity {
         List<String> listFill = new ArrayList<>();
         List<String> list = new ArrayList<>();
         for (DeviceBean.ResultBean.AdsBean bannerBean : bannerList) {
-            list.add(bannerBean.getUrl());
             switch (bannerBean.getPosition()){
                 case "main-left-10":
                     list.add(bannerBean.getUrl());
@@ -301,9 +293,14 @@ public class MainActivity extends BaseActivity {
             }
         }
         runOnUiThread(() -> {
+            tvTop.setText(String.format("%s%s\u3000客服电话：%s", DeviceInfo.getIntence().getProperty(), DeviceInfo.getIntence().getTag(), DeviceInfo.getIntence().getService_tel()));
+            GlideUtils.setBackgroud(ivLogo, DeviceInfo.getIntence().getLogo());
             bannerFlow.update(list);
             bannerFill.update(listFill);
-            if (bannerFill.getVisibility() == View.GONE){
+            if (fillTimer >= 60){
+                bannerFill.setVisibility(View.VISIBLE);
+            }else {
+                bannerFill.setVisibility(View.GONE);
                 bannerFill.stopAutoPlay();
             }
         });
@@ -359,11 +356,6 @@ public class MainActivity extends BaseActivity {
         bannerFill.setIndicatorGravity(BannerConfig.CENTER);
         //banner设置方法全部调用完毕时最后调用
         bannerFill.start();
-        bannerFill.setOnBannerListener(position -> {
-            fillTimer = 0;
-            bannerFill.stopAutoPlay();
-            bannerFill.setVisibility(View.GONE);
-        });
     }
 
 
@@ -402,6 +394,9 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            if (fillTimer >= 60){
+                bannerFlow.startAutoPlay();
+            }
             touchTimer = 0;
             fillTimer = 0;
             bannerFill.setVisibility(View.GONE);

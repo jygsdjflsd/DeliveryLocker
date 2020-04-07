@@ -98,6 +98,7 @@ public class MainActivity extends BaseActivity {
 
     private int touchTimer;//页面切换计数
     private int fillTimer;//全屏轮播计数器
+    private int imgNumb;//全屏轮播图个数
     private Handler mHandler;//handler计数器
     private Runnable runnable;
 
@@ -189,7 +190,7 @@ public class MainActivity extends BaseActivity {
                 btn1.setTextColor(ContextCompat.getColor(mContext, R.color.colorWhite));
                 btn1.setBackgroundResource(R.color.colorMaster);
             }
-            if (fillTimer == 60) {
+            if (fillTimer == 60 && imgNumb > 0) {
                 bannerFill.setVisibility(View.VISIBLE);
                 bannerFill.startAutoPlay();
                 //左侧轮播停止
@@ -215,24 +216,12 @@ public class MainActivity extends BaseActivity {
                 btn2.setTextColor(ContextCompat.getColor(mContext, R.color.colorWhite));
                 btn2.setBackgroundResource(R.color.colorMaster);
                 viewPager.setCurrentItem(1);
-//                touchTimer = 0;
-//                fillTimer = 0;
-//                bannerFill.setVisibility(View.GONE);
-//                bannerFill.stopAutoPlay();
-//                mHandler.removeCallbacks(runnable);
-//                mHandler.postDelayed(runnable, 1000);
                 break;
             case R.id.btn3://投递员投件
                 clearBtnBack();
                 btn3.setTextColor(ContextCompat.getColor(mContext, R.color.colorWhite));
                 btn3.setBackgroundResource(R.color.colorMaster);
                 viewPager.setCurrentItem(2);
-//                touchTimer = 0;
-//                fillTimer = 0;
-//                bannerFill.setVisibility(View.GONE);
-//                bannerFill.stopAutoPlay();
-//                mHandler.removeCallbacks(runnable);
-//                mHandler.postDelayed(runnable, 1000);
                 break;
             case R.id.tvNetWork:
                 toast(String.format("当前版本%s", SystemUtil.getVerName(mContext)));
@@ -279,6 +268,7 @@ public class MainActivity extends BaseActivity {
      */
     @Subscribe
     public void refreshDevice(DeviceRefreshBus bus) {
+        imgNumb = 0;
         bannerList = DeviceInfo.getIntence().getDeviceBean().getResult().getAds();
         List<String> listFill = new ArrayList<>();
         List<String> list = new ArrayList<>();
@@ -289,6 +279,7 @@ public class MainActivity extends BaseActivity {
                     break;
                 case "full-screen-10":
                     listFill.add(bannerBean.getUrl());
+                    imgNumb++;
                     break;
             }
         }
@@ -297,7 +288,7 @@ public class MainActivity extends BaseActivity {
             GlideUtils.setBackgroud(ivLogo, DeviceInfo.getIntence().getLogo());
             bannerFlow.update(list);
             bannerFill.update(listFill);
-            if (fillTimer >= 60){
+            if (fillTimer >= 60 && imgNumb > 0){
                 bannerFill.setVisibility(View.VISIBLE);
             }else {
                 bannerFill.setVisibility(View.GONE);
@@ -307,6 +298,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initBanner(List<DeviceBean.ResultBean.AdsBean> adsBean) {
+        imgNumb = 0;
         List<String> list = new ArrayList<>();
         List<String> listFill = new ArrayList<>();
         for (DeviceBean.ResultBean.AdsBean bannerBean : adsBean) {
@@ -316,6 +308,7 @@ public class MainActivity extends BaseActivity {
                     break;
                 case "full-screen-10":
                     listFill.add(bannerBean.getUrl());
+                    imgNumb++;
                     break;
             }
         }

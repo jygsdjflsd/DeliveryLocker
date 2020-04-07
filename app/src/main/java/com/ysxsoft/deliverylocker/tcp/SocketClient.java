@@ -40,8 +40,8 @@ import okhttp3.Dns;
  */
 public class SocketClient {
 
-//    public static final String TCP_HOST = "iot.tcp.modoubox.com";
-    public static final String TCP_HOST = "iot.dev.modoubox.com";//测试
+    public static final String TCP_HOST = "iot.tcp.modoubox.com";
+//    public static final String TCP_HOST = "iot.dev.modoubox.com";//测试
     public static final int TCP_PORT = 8091;
     private static Socket socket;
     private static InetAddress address;
